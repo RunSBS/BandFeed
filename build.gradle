@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.14'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+// root project 실행 가능 Jar 파일 생성기능 Off
+bootJar.enabled = false
+
+allprojects {
+    group = 'com.bandfeed'
+    version = '0.0.1-SNAPSHOT'
+    description = 'bandfeed'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+// 루트 모듈을 제외한 하위 프로젝트 공통 설정
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+project(':common') {
+    bootJar.enabled = false
+    jar.enabled = true
+}
+
+project(':apps:gateway-server') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:config-server') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:eureka-server') {
+    apply plugin: 'org.springframework.boot'
+}
