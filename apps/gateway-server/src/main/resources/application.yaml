@@ -3,10 +3,6 @@ spring:
     name: gateway-server
   config:
     import: optional:configserver:http://localhost:8888
-  cloud:
-    config:
-      request-connect-timeout: 3000  # 3초 내 연결 안 되면 skip
-      request-read-timeout: 5000     # 5초 내 응답 없으면 skip
 
 server:
   port: 8000

@@ -10,8 +10,6 @@ spring:
           uri: https://github.com/RunSBS/BandFeed-config
           default-label: main
           search-paths: configs/{application}
-          clone-on-start: true   # 시작 시 클론, 이후 캐시 사용
-          timeout: 10            # git 작업 타임아웃 (초)
 
 server:
   port: 8888
