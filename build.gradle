@@ -51,6 +51,11 @@ project(':common') {
     jar.enabled = true
 }
 
+project(':apps') {
+    bootJar.enabled = false
+    jar.enabled = false
+}
+
 project(':apps:gateway-server') {
     apply plugin: 'org.springframework.boot'
 }
@@ -60,5 +65,21 @@ project(':apps:config-server') {
 }
 
 project(':apps:eureka-server') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:band-service') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:user-service') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:wiki-service') {
+    apply plugin: 'org.springframework.boot'
+}
+
+project(':apps:chat-service') {
     apply plugin: 'org.springframework.boot'
 }

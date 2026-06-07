@@ -4,3 +4,12 @@
 build/
 **/build/
 *.class
+
+# Mac
+.DS_Store
+
+# 서브모듈 독립 Gradle 파일 (멀티모듈에서 불필요)
+**/gradlew
+**/gradlew.bat
+**/gradle/
+**/HELP.md

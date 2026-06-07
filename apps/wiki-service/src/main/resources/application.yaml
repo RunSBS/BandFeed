@@ -1,6 +1,6 @@
 spring:
   application:
-    name: band-service
+    name: wiki-service
   config:
     import: optional:configserver:http://localhost:8888
   datasource:
@@ -16,9 +16,8 @@ spring:
     hibernate:
       ddl-auto: update
 
-
 server:
-  port: 9020
+  port: 9030
 
 eureka:
   client:
