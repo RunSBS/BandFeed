@@ -7,8 +7,8 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/RunSBS/BandFeed-config
-          default-label: main
+          uri: ${CONFIG_GIT_URI:https://github.com/RunSBS/BandFeed-config}
+          default-label: ${CONFIG_GIT_BRANCH:main}
           search-paths: configs/{application}
 
 server:

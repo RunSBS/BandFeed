@@ -13,3 +13,5 @@ build/
 **/gradlew.bat
 **/gradle/
 **/HELP.md
+
+.env

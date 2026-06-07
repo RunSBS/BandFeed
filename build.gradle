@@ -56,7 +56,7 @@ project(':apps') {
     jar.enabled = false
 }
 
-project(':apps:gateway-server') {
+project(':apps:gateway-service') {
     apply plugin: 'org.springframework.boot'
 }
 
