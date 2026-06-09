@@ -13,35 +13,35 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FollowRepositoryImpl implements FollowRepository {
 
-    private final JpaFollowRepository jpaFollowRepository;
+    private final FollowJpaRepository jpa;
 
     @Override
     public Optional<Follow> findByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
-        return jpaFollowRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).map(FollowEntity::toDomain);
+        return jpa.findByFollowerIdAndFolloweeId(followerId, followeeId).map(FollowEntity::toDomain);
     }
 
     @Override
     public List<Follow> findAllByFolloweeId(Long followeeId) {
-        return jpaFollowRepository.findAllByFolloweeId(followeeId).stream().map(FollowEntity::toDomain).toList();
+        return jpa.findAllByFolloweeId(followeeId).stream().map(FollowEntity::toDomain).toList();
     }
 
     @Override
     public List<Follow> findAllByFollowerId(Long followerId) {
-        return jpaFollowRepository.findAllByFollowerId(followerId).stream().map(FollowEntity::toDomain).toList();
+        return jpa.findAllByFollowerId(followerId).stream().map(FollowEntity::toDomain).toList();
     }
 
     @Override
     public Follow save(Follow follow) {
-        return jpaFollowRepository.save(FollowEntity.from(follow)).toDomain();
+        return jpa.save(FollowEntity.from(follow)).toDomain();
     }
 
     @Override
     public void delete(Follow follow) {
-        jpaFollowRepository.deleteById(follow.getId());
+        jpa.deleteById(follow.getId());
     }
 
     @Override
     public boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
-        return jpaFollowRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId);
+        return jpa.existsByFollowerIdAndFolloweeId(followerId, followeeId);
     }
 }
