@@ -32,6 +32,7 @@ services:
       - .env
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
       interval: 5s
@@ -220,6 +221,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
     <<: *common-service
 
   chat-service:

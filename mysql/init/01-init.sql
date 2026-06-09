@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS user_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS band_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS wiki_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS chat_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON user_db.* TO 'bandfeed'@'%';
+GRANT ALL PRIVILEGES ON band_db.* TO 'bandfeed'@'%';
+GRANT ALL PRIVILEGES ON wiki_db.* TO 'bandfeed'@'%';
+GRANT ALL PRIVILEGES ON chat_db.* TO 'bandfeed'@'%';
+
+FLUSH PRIVILEGES;
