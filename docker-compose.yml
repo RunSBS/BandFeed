@@ -175,7 +175,7 @@ services:
       dockerfile: apps/user-service/Dockerfile
     container_name: bandfeed-user
     ports:
-      - "${USER_SERVER_PORT}:9000"
+      - "${USER_SERVER_PORT}:9010"
     environment:
       <<: *java-tz
       SERVER_PORT: 9000
@@ -246,7 +246,7 @@ services:
   zipkin:
     image: openzipkin/zipkin:3
     container_name: bandfeed-zipkin
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     ports:
       - "${ZIPKIN_PORT}:9411"
     healthcheck:
@@ -261,7 +261,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.53.0
     container_name: bandfeed-prometheus
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     environment:
       - TZ=Asia/Seoul
     ports:
@@ -280,7 +280,7 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.28.1
     container_name: bandfeed-alertmanager
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     ports:
       - "${ALERTMANAGER_PORT}:9093"
     environment:
@@ -299,7 +299,7 @@ services:
   grafana:
     image: grafana/grafana:11.1.0
     container_name: bandfeed-grafana
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     ports:
       - "${GRAFANA_PORT}:3000"
     environment:
@@ -321,7 +321,7 @@ services:
   loki:
     image: grafana/loki:2.9.8
     container_name: bandfeed-loki
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     environment:
       - TZ=Asia/Seoul
     ports:
@@ -337,7 +337,7 @@ services:
   promtail:
     image: grafana/promtail:3.1.0
     container_name: bandfeed-promtail
-    profiles: ["monitoring"]
+    profiles: [ "monitoring" ]
     environment:
       - TZ=Asia/Seoul
       - DOCKER_API_VERSION=1.44

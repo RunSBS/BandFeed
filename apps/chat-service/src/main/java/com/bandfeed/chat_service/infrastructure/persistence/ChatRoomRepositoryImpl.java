@@ -1,0 +1,38 @@
+package com.bandfeed.chat_service.infrastructure.persistence;
+
+import com.bandfeed.chat_service.domain.model.ChatRoom;
+import com.bandfeed.chat_service.domain.repository.ChatRoomRepository;
+import com.bandfeed.chat_service.infrastructure.entity.ChatRoomEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class ChatRoomRepositoryImpl implements ChatRoomRepository {
+
+    private final ChatRoomJpaRepository jpa;
+
+    @Override
+    public Optional<ChatRoom> findById(Long id) {
+        return jpa.findById(id).map(ChatRoomEntity::toDomain);
+    }
+
+    @Override
+    public Optional<ChatRoom> findByParticipants(Long userAId, Long userBId) {
+        Long p1 = Math.min(userAId, userBId);
+        Long p2 = Math.max(userAId, userBId);
+        return jpa.findByParticipant1IdAndParticipant2Id(p1, p2).map(ChatRoomEntity::toDomain);
+    }
+
+    @Override
+    public ChatRoom save(ChatRoom chatRoom) {
+        return jpa.save(ChatRoomEntity.from(chatRoom)).toDomain();
+    }
+
+    @Override
+    public void delete(ChatRoom chatRoom) {
+        jpa.deleteById(chatRoom.getId());
+    }
+}
