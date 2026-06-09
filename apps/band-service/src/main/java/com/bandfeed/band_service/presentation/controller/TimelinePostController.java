@@ -6,43 +6,45 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/timeline-posts")
 @RequiredArgsConstructor
 public class TimelinePostController implements TimelinePostControllerDocs {
 
     @Override
-    public ResponseEntity<?> createPost(Long bandId, Object request) {
+    public ResponseEntity<?> createPost(UUID bandId, Object request) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> getPost(Long postId) {
+    public ResponseEntity<?> getPost(UUID postId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> listPosts(Long bandId, int page, int size) {
+    public ResponseEntity<?> listPosts(UUID bandId, int page, int size) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> updatePost(Long postId, Object request) {
+    public ResponseEntity<?> updatePost(UUID postId, Object request) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> deletePost(Long postId) {
+    public ResponseEntity<?> deletePost(UUID postId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> createComment(Long postId, Object request) {
+    public ResponseEntity<?> createComment(UUID postId, Object request) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> deleteComment(Long commentId) {
+    public ResponseEntity<?> deleteComment(UUID commentId) {
         return null;
     }
 }

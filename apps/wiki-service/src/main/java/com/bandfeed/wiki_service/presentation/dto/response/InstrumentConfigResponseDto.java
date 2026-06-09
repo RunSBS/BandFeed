@@ -2,9 +2,11 @@ package com.bandfeed.wiki_service.presentation.dto.response;
 
 import com.bandfeed.wiki_service.domain.model.InstrumentConfig;
 
+import java.util.UUID;
+
 public record InstrumentConfigResponseDto(
-        Long id,
-        Long songId,
+        UUID id,
+        UUID songId,
         String instrumentType,
         String difficulty,
         String notes

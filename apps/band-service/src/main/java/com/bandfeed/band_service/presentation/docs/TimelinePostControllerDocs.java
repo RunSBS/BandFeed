@@ -2,18 +2,20 @@ package com.bandfeed.band_service.presentation.docs;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 public interface TimelinePostControllerDocs {
-    ResponseEntity<?> createPost(Long bandId, Object request);
+    ResponseEntity<?> createPost(UUID bandId, Object request);
 
-    ResponseEntity<?> getPost(Long postId);
+    ResponseEntity<?> getPost(UUID postId);
 
-    ResponseEntity<?> listPosts(Long bandId, int page, int size);
+    ResponseEntity<?> listPosts(UUID bandId, int page, int size);
 
-    ResponseEntity<?> updatePost(Long postId, Object request);
+    ResponseEntity<?> updatePost(UUID postId, Object request);
 
-    ResponseEntity<?> deletePost(Long postId);
+    ResponseEntity<?> deletePost(UUID postId);
 
-    ResponseEntity<?> createComment(Long postId, Object request);
+    ResponseEntity<?> createComment(UUID postId, Object request);
 
-    ResponseEntity<?> deleteComment(Long commentId);
+    ResponseEntity<?> deleteComment(UUID commentId);
 }

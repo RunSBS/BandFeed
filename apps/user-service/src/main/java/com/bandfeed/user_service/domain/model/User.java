@@ -1,6 +1,7 @@
 package com.bandfeed.user_service.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class User {
 
-    private final Long id;
+    private final UUID id;
     private String email;
     private String password;
     private String nickname;
@@ -31,7 +32,7 @@ public class User {
         this.updatedAt = null;
     }
 
-    private User(Long id, String email, String password, String nickname, String profileImageUrl,
+    private User(UUID id, String email, String password, String nickname, String profileImageUrl,
                  String introduction, UserRole role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
@@ -53,7 +54,7 @@ public class User {
                 .build();
     }
 
-    public static User reconstitute(Long id,
+    public static User reconstitute(UUID id,
                                     String email,
                                     String password,
                                     String nickname,

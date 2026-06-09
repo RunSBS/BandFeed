@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -21,7 +22,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Override
-    public ChatMessage sendMessage(Long chatRoomId, Long senderId, String content) {
+    public ChatMessage sendMessage(UUID chatRoomId, UUID senderId, String content) {
         chatRoomService.findRoom(chatRoomId);
         ChatMessage message = ChatMessage.create(chatRoomId, senderId, content);
         return chatMessageRepository.save(message);
@@ -29,12 +30,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ChatMessage> findMessages(Long chatRoomId, Long beforeId, int size) {
-        return chatMessageRepository.findByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, beforeId, size);
+    public List<ChatMessage> findMessages(UUID chatRoomId, int size) {
+        return chatMessageRepository.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, size);
     }
 
     @Override
-    public void readMessage(Long chatRoomId, Long userId, Long messageId) {
+    public void readMessage(UUID chatRoomId, UUID userId, UUID messageId) {
         chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
                 .ifPresent(member -> {
                     member.readMessage(messageId);

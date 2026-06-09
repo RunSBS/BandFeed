@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,14 +16,14 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
     private final ChatRoomJpaRepository jpa;
 
     @Override
-    public Optional<ChatRoom> findById(Long id) {
+    public Optional<ChatRoom> findById(UUID id) {
         return jpa.findById(id).map(ChatRoomEntity::toDomain);
     }
 
     @Override
-    public Optional<ChatRoom> findByParticipants(Long userAId, Long userBId) {
-        Long p1 = Math.min(userAId, userBId);
-        Long p2 = Math.max(userAId, userBId);
+    public Optional<ChatRoom> findByParticipants(UUID userAId, UUID userBId) {
+        UUID p1 = userAId.compareTo(userBId) < 0 ? userAId : userBId;
+        UUID p2 = userAId.compareTo(userBId) < 0 ? userBId : userAId;
         return jpa.findByParticipant1IdAndParticipant2Id(p1, p2).map(ChatRoomEntity::toDomain);
     }
 

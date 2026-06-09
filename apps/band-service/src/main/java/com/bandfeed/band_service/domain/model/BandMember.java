@@ -5,18 +5,19 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class BandMember {
 
-    private final Long id;
-    private final Long bandId;
-    private final Long userId;
+    private final UUID id;
+    private final UUID bandId;
+    private final UUID userId;
     private BandRole role;
     private LocalDateTime joinedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private BandMember(Long bandId, Long userId, BandRole role) {
+    private BandMember(UUID bandId, UUID userId, BandRole role) {
         this.id = null;
         this.bandId = bandId;
         this.userId = userId;
@@ -24,7 +25,7 @@ public class BandMember {
         this.joinedAt = null;
     }
 
-    private BandMember(Long id, Long bandId, Long userId, BandRole role, LocalDateTime joinedAt) {
+    private BandMember(UUID id, UUID bandId, UUID userId, BandRole role, LocalDateTime joinedAt) {
         this.id = id;
         this.bandId = bandId;
         this.userId = userId;
@@ -32,7 +33,7 @@ public class BandMember {
         this.joinedAt = joinedAt;
     }
 
-    public static BandMember create(Long bandId, Long userId, BandRole role) {
+    public static BandMember create(UUID bandId, UUID userId, BandRole role) {
         return BandMember.builder()
                 .bandId(bandId)
                 .userId(userId)
@@ -40,7 +41,7 @@ public class BandMember {
                 .build();
     }
 
-    public static BandMember reconstitute(Long id, Long bandId, Long userId, BandRole role, LocalDateTime joinedAt) {
+    public static BandMember reconstitute(UUID id, UUID bandId, UUID userId, BandRole role, LocalDateTime joinedAt) {
         return new BandMember(id, bandId, userId, role, joinedAt);
     }
 

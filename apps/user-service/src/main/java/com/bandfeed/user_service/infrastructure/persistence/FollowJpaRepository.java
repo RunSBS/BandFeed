@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface FollowJpaRepository extends JpaRepository<FollowEntity, Long> {
-    Optional<FollowEntity> findByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
-    List<FollowEntity> findAllByFolloweeId(Long followeeId);
-    List<FollowEntity> findAllByFollowerId(Long followerId);
-    boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
+public interface FollowJpaRepository extends JpaRepository<FollowEntity, UUID> {
+    Optional<FollowEntity> findByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId);
+    List<FollowEntity> findAllByFolloweeId(UUID followeeId);
+    List<FollowEntity> findAllByFollowerId(UUID followerId);
+    boolean existsByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId);
 }

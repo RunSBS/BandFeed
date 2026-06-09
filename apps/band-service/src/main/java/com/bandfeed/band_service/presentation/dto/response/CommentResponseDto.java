@@ -3,11 +3,12 @@ package com.bandfeed.band_service.presentation.dto.response;
 import com.bandfeed.band_service.domain.model.Comment;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record CommentResponseDto(
-        Long id,
-        Long postId,
-        Long authorId,
+        UUID id,
+        UUID postId,
+        UUID authorId,
         String content,
         LocalDateTime createdAt
 ) {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,12 +17,12 @@ public class BandMemberRepositoryImpl implements BandMemberRepository {
     private final BandMemberJpaRepository jpa;
 
     @Override
-    public Optional<BandMember> findByBandIdAndUserId(Long bandId, Long userId) {
+    public Optional<BandMember> findByBandIdAndUserId(UUID bandId, UUID userId) {
         return jpa.findByBandIdAndUserId(bandId, userId).map(BandMemberEntity::toDomain);
     }
 
     @Override
-    public List<BandMember> findAllByBandId(Long bandId) {
+    public List<BandMember> findAllByBandId(UUID bandId) {
         return jpa.findAllByBandId(bandId).stream().map(BandMemberEntity::toDomain).toList();
     }
 

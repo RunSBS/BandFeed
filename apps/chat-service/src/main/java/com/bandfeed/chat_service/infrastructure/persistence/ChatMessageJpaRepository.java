@@ -5,7 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface ChatMessageJpaRepository extends JpaRepository<ChatMessageEntity, Long> {
-    List<ChatMessageEntity> findByChatRoomIdAndIdLessThanOrderByIdDesc(Long chatRoomId, Long beforeId, Pageable pageable);
+public interface ChatMessageJpaRepository extends JpaRepository<ChatMessageEntity, UUID> {
+    List<ChatMessageEntity> findByChatRoomIdOrderByCreatedAtDesc(UUID chatRoomId, Pageable pageable);
 }

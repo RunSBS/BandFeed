@@ -4,12 +4,13 @@ import com.bandfeed.user_service.domain.model.Follow;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface FollowRepository {
-    Optional<Follow> findByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
-    List<Follow> findAllByFolloweeId(Long followeeId);
-    List<Follow> findAllByFollowerId(Long followerId);
+    Optional<Follow> findByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId);
+    List<Follow> findAllByFolloweeId(UUID followeeId);
+    List<Follow> findAllByFollowerId(UUID followerId);
     Follow save(Follow follow);
     void delete(Follow follow);
-    boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
+    boolean existsByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId);
 }

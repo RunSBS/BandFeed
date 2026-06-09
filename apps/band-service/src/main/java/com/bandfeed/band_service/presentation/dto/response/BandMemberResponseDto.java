@@ -3,9 +3,10 @@ package com.bandfeed.band_service.presentation.dto.response;
 import com.bandfeed.band_service.domain.model.BandMember;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record BandMemberResponseDto(
-        Long userId,
+        UUID userId,
         String role,
         LocalDateTime joinedAt
 ) {

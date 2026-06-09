@@ -5,18 +5,19 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class ChatRoomMember {
 
-    private final Long id;
-    private final Long chatRoomId;
-    private final Long userId;
+    private final UUID id;
+    private final UUID chatRoomId;
+    private final UUID userId;
     private LocalDateTime joinedAt;
-    private Long lastReadMessageId;
+    private UUID lastReadMessageId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private ChatRoomMember(Long chatRoomId, Long userId) {
+    private ChatRoomMember(UUID chatRoomId, UUID userId) {
         this.id = null;
         this.chatRoomId = chatRoomId;
         this.userId = userId;
@@ -24,7 +25,7 @@ public class ChatRoomMember {
         this.lastReadMessageId = null;
     }
 
-    private ChatRoomMember(Long id, Long chatRoomId, Long userId, LocalDateTime joinedAt, Long lastReadMessageId) {
+    private ChatRoomMember(UUID id, UUID chatRoomId, UUID userId, LocalDateTime joinedAt, UUID lastReadMessageId) {
         this.id = id;
         this.chatRoomId = chatRoomId;
         this.userId = userId;
@@ -32,19 +33,19 @@ public class ChatRoomMember {
         this.lastReadMessageId = lastReadMessageId;
     }
 
-    public static ChatRoomMember create(Long chatRoomId, Long userId) {
+    public static ChatRoomMember create(UUID chatRoomId, UUID userId) {
         return ChatRoomMember.builder()
                 .chatRoomId(chatRoomId)
                 .userId(userId)
                 .build();
     }
 
-    public static ChatRoomMember reconstitute(Long id, Long chatRoomId, Long userId,
-                                              LocalDateTime joinedAt, Long lastReadMessageId) {
+    public static ChatRoomMember reconstitute(UUID id, UUID chatRoomId, UUID userId,
+                                              LocalDateTime joinedAt, UUID lastReadMessageId) {
         return new ChatRoomMember(id, chatRoomId, userId, joinedAt, lastReadMessageId);
     }
 
-    public void readMessage(Long messageId) {
+    public void readMessage(UUID messageId) {
         this.lastReadMessageId = messageId;
     }
 }

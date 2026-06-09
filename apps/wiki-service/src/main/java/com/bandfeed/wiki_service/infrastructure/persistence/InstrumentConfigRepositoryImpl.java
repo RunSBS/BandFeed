@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class InstrumentConfigRepositoryImpl implements InstrumentConfigRepositor
     private final InstrumentConfigJpaRepository jpa;
 
     @Override
-    public List<InstrumentConfig> findAllBySongId(Long songId) {
+    public List<InstrumentConfig> findAllBySongId(UUID songId) {
         return jpa.findAllBySongId(songId).stream().map(InstrumentConfigEntity::toDomain).toList();
     }
 

@@ -3,12 +3,13 @@ package com.bandfeed.chat_service.presentation.dto.response;
 import com.bandfeed.chat_service.domain.model.ChatRoomMember;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record ChatRoomMemberResponseDto(
-        Long userId,
-        Long chatRoomId,
+        UUID userId,
+        UUID chatRoomId,
         LocalDateTime joinedAt,
-        Long lastReadMessageId
+        UUID lastReadMessageId
 ) {
     public static ChatRoomMemberResponseDto from(ChatRoomMember member) {
         return new ChatRoomMemberResponseDto(

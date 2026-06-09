@@ -1,10 +1,11 @@
 package com.bandfeed.band_service.domain.event;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record BandCreatedEvent(
-        Long bandId,
-        Long leaderId,
+        UUID bandId,
+        UUID leaderId,
         String bandName,
         LocalDateTime occurredAt
 ) {}

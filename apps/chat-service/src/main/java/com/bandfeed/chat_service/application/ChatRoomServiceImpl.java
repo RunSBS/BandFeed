@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @Transactional
@@ -16,14 +18,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Override
-    public ChatRoom findOrCreateRoom(Long userAId, Long userBId) {
+    public ChatRoom findOrCreateRoom(UUID userAId, UUID userBId) {
         return chatRoomRepository.findByParticipants(userAId, userBId)
                 .orElseGet(() -> chatRoomRepository.save(ChatRoom.create(userAId, userBId)));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ChatRoom findRoom(Long roomId) {
+    public ChatRoom findRoom(UUID roomId) {
         return chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("ChatRoom not found: " + roomId));
     }

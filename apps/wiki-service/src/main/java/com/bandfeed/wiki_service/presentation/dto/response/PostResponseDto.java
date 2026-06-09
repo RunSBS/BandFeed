@@ -3,11 +3,12 @@ package com.bandfeed.wiki_service.presentation.dto.response;
 import com.bandfeed.wiki_service.domain.model.Post;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record PostResponseDto(
-        Long id,
-        Long songId,
-        Long authorId,
+        UUID id,
+        UUID songId,
+        UUID authorId,
         String title,
         String content,
         LocalDateTime createdAt

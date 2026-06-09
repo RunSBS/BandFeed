@@ -5,37 +5,35 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class Band {
 
-    private final Long id;
+    private final UUID id;
     private String name;
     private String description;
-    private BandStatus status;
-    private Long leaderId;
+    private UUID leaderId;
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Band(String name, String description, Long leaderId) {
+    private Band(String name, String description, UUID leaderId) {
         this.id = null;
         this.name = name;
         this.description = description;
-        this.status = BandStatus.ACTIVE;
         this.leaderId = leaderId;
         this.createdAt = null;
     }
 
-    private Band(Long id, String name, String description, BandStatus status, Long leaderId, LocalDateTime createdAt) {
+    private Band(UUID id, String name, String description, UUID leaderId, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.status = status;
         this.leaderId = leaderId;
         this.createdAt = createdAt;
     }
 
-    public static Band create(String name, String description, Long leaderId) {
+    public static Band create(String name, String description, UUID leaderId) {
         return Band.builder()
                 .name(name)
                 .description(description)
@@ -43,15 +41,11 @@ public class Band {
                 .build();
     }
 
-    public static Band reconstitute(Long id, String name, String description, BandStatus status, Long leaderId, LocalDateTime createdAt) {
-        return new Band(id, name, description, status, leaderId, createdAt);
+    public static Band reconstitute(UUID id, String name, String description, UUID leaderId, LocalDateTime createdAt) {
+        return new Band(id, name, description, leaderId, createdAt);
     }
 
-    public void disband() {
-        this.status = BandStatus.DISBANDED;
-    }
-
-    public void transferLeader(Long newLeaderId) {
+    public void transferLeader(UUID newLeaderId) {
         this.leaderId = newLeaderId;
     }
 

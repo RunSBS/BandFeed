@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "follows")
@@ -13,17 +16,18 @@ import lombok.NoArgsConstructor;
 public class FollowEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long followerId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID followerId;
 
-    @Column(nullable = false)
-    private Long followeeId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID followeeId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private FollowEntity(Long id, Long followerId, Long followeeId) {
+    private FollowEntity(UUID id, UUID followerId, UUID followeeId) {
         this.id = id;
         this.followerId = followerId;
         this.followeeId = followeeId;

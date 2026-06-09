@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -18,33 +19,33 @@ public class TimelinePostServiceImpl implements TimelinePostService {
     private final TimelinePostRepository timelinePostRepository;
 
     @Override
-    public TimelinePost createPost(Long bandId, Long authorId, String title, String content) {
+    public TimelinePost createPost(UUID bandId, UUID authorId, String title, String content) {
         TimelinePost post = TimelinePost.create(bandId, authorId, title, content);
         return timelinePostRepository.save(post);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TimelinePost findPost(Long postId) {
+    public TimelinePost findPost(UUID postId) {
         return timelinePostRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("TimelinePost not found: " + postId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TimelinePost> findPosts(Long bandId) {
+    public List<TimelinePost> findPosts(UUID bandId) {
         return timelinePostRepository.findAllByBandId(bandId);
     }
 
     @Override
-    public TimelinePost updatePost(Long postId, String title, String content, Long requesterId) {
+    public TimelinePost updatePost(UUID postId, String title, String content, UUID requesterId) {
         TimelinePost post = findPost(postId);
         post.update(title, content);
         return timelinePostRepository.save(post);
     }
 
     @Override
-    public void deletePost(Long postId, Long requesterId) {
+    public void deletePost(UUID postId, UUID requesterId) {
         TimelinePost post = findPost(postId);
         timelinePostRepository.delete(post);
     }

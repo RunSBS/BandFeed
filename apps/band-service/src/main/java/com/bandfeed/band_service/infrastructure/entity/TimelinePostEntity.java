@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "timeline_posts")
@@ -13,14 +16,15 @@ import lombok.NoArgsConstructor;
 public class TimelinePostEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long bandId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID bandId;
 
-    @Column(nullable = false)
-    private Long authorId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID authorId;
 
     @Column(nullable = false, length = 200)
     private String title;
@@ -29,7 +33,7 @@ public class TimelinePostEntity extends BaseEntity {
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private TimelinePostEntity(Long id, Long bandId, Long authorId, String title, String content) {
+    private TimelinePostEntity(UUID id, UUID bandId, UUID authorId, String title, String content) {
         this.id = id;
         this.bandId = bandId;
         this.authorId = authorId;

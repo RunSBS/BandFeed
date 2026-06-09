@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "chat_room_members")
@@ -13,19 +16,21 @@ import lombok.NoArgsConstructor;
 public class ChatRoomMemberEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long chatRoomId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID chatRoomId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID userId;
 
-    private Long lastReadMessageId;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID lastReadMessageId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private ChatRoomMemberEntity(Long id, Long chatRoomId, Long userId, Long lastReadMessageId) {
+    private ChatRoomMemberEntity(UUID id, UUID chatRoomId, UUID userId, UUID lastReadMessageId) {
         this.id = id;
         this.chatRoomId = chatRoomId;
         this.userId = userId;

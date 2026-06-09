@@ -5,18 +5,19 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class Comment {
 
-    private final Long id;
-    private final Long postId;
-    private final Long authorId;
+    private final UUID id;
+    private final UUID postId;
+    private final UUID authorId;
     private String content;
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Comment(Long postId, Long authorId, String content) {
+    private Comment(UUID postId, UUID authorId, String content) {
         this.id = null;
         this.postId = postId;
         this.authorId = authorId;
@@ -24,7 +25,7 @@ public class Comment {
         this.createdAt = null;
     }
 
-    private Comment(Long id, Long postId, Long authorId, String content, LocalDateTime createdAt) {
+    private Comment(UUID id, UUID postId, UUID authorId, String content, LocalDateTime createdAt) {
         this.id = id;
         this.postId = postId;
         this.authorId = authorId;
@@ -32,7 +33,7 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public static Comment create(Long postId, Long authorId, String content) {
+    public static Comment create(UUID postId, UUID authorId, String content) {
         return Comment.builder()
                 .postId(postId)
                 .authorId(authorId)
@@ -40,7 +41,7 @@ public class Comment {
                 .build();
     }
 
-    public static Comment reconstitute(Long id, Long postId, Long authorId, String content, LocalDateTime createdAt) {
+    public static Comment reconstitute(UUID id, UUID postId, UUID authorId, String content, LocalDateTime createdAt) {
         return new Comment(id, postId, authorId, content, createdAt);
     }
 

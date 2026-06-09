@@ -5,15 +5,16 @@ import com.bandfeed.band_service.domain.model.Band;
 import com.bandfeed.band_service.domain.model.BandMember;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface BandService {
 
     Band create(CreateBandCommand command);
-    Band findById(Long bandId);
-    Band updateInfo(Long bandId, String name, String description, Long requesterId);
-    void disband(Long bandId, Long requesterId);
+    Band findById(UUID bandId);
+    Band updateInfo(UUID bandId, String name, String description, UUID requesterId);
+    void disband(UUID bandId, UUID requesterId);
 
-    BandMember inviteMember(Long bandId, Long userId, Long requesterId);
-    void kickOrLeave(Long bandId, Long userId, Long requesterId);
-    List<BandMember> findMembers(Long bandId);
+    BandMember inviteMember(UUID bandId, UUID userId, UUID requesterId);
+    void kickOrLeave(UUID bandId, UUID userId, UUID requesterId);
+    List<BandMember> findMembers(UUID bandId);
 }

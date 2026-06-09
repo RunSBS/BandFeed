@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,13 +18,13 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
     private final ChatMessageJpaRepository jpa;
 
     @Override
-    public Optional<ChatMessage> findById(Long id) {
+    public Optional<ChatMessage> findById(UUID id) {
         return jpa.findById(id).map(ChatMessageEntity::toDomain);
     }
 
     @Override
-    public List<ChatMessage> findByChatRoomIdAndIdLessThanOrderByIdDesc(Long chatRoomId, Long beforeId, int size) {
-        return jpa.findByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, beforeId, PageRequest.of(0, size))
+    public List<ChatMessage> findByChatRoomIdOrderByCreatedAtDesc(UUID chatRoomId, int size) {
+        return jpa.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, PageRequest.of(0, size))
                 .stream().map(ChatMessageEntity::toDomain).toList();
     }
 

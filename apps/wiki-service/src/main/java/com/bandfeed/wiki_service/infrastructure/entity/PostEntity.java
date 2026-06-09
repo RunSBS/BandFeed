@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
@@ -13,14 +16,15 @@ import lombok.NoArgsConstructor;
 public class PostEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long songId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID songId;
 
-    @Column(nullable = false)
-    private Long authorId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID authorId;
 
     @Column(nullable = false, length = 200)
     private String title;
@@ -29,7 +33,7 @@ public class PostEntity extends BaseEntity {
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private PostEntity(Long id, Long songId, Long authorId, String title, String content) {
+    private PostEntity(UUID id, UUID songId, UUID authorId, String title, String content) {
         this.id = id;
         this.songId = songId;
         this.authorId = authorId;

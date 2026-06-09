@@ -3,10 +3,11 @@ package com.bandfeed.chat_service.application;
 import com.bandfeed.chat_service.domain.model.ChatMessage;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ChatMessageService {
 
-    ChatMessage sendMessage(Long chatRoomId, Long senderId, String content);
-    List<ChatMessage> findMessages(Long chatRoomId, Long beforeId, int size);
-    void readMessage(Long chatRoomId, Long userId, Long messageId);
+    ChatMessage sendMessage(UUID chatRoomId, UUID senderId, String content);
+    List<ChatMessage> findMessages(UUID chatRoomId, int size);
+    void readMessage(UUID chatRoomId, UUID userId, UUID messageId);
 }

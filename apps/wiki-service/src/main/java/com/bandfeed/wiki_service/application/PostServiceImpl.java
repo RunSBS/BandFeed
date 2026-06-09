@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -26,26 +27,26 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public Post findPost(Long postId) {
+    public Post findPost(UUID postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Post> findPostsBySong(Long songId) {
+    public List<Post> findPostsBySong(UUID songId) {
         return postRepository.findAllBySongId(songId);
     }
 
     @Override
-    public Post updatePost(Long postId, String title, String content, Long requesterId) {
+    public Post updatePost(UUID postId, String title, String content, UUID requesterId) {
         Post post = findPost(postId);
         post.update(title, content);
         return postRepository.save(post);
     }
 
     @Override
-    public void deletePost(Long postId, Long requesterId) {
+    public void deletePost(UUID postId, UUID requesterId) {
         Post post = findPost(postId);
         postRepository.delete(post);
     }

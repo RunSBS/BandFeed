@@ -3,9 +3,10 @@ package com.bandfeed.user_service.presentation.dto.response;
 import com.bandfeed.user_service.domain.model.User;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record UserResponseDto(
-        Long id,
+        UUID id,
         String email,
         String nickname,
         String profileImageUrl,

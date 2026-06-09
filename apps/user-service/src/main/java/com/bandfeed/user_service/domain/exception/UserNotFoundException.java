@@ -1,7 +1,9 @@
 package com.bandfeed.user_service.domain.exception;
 
+import java.util.UUID;
+
 public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(Long userId) {
+    public UserNotFoundException(UUID userId) {
         super("User not found: " + userId);
     }
 }

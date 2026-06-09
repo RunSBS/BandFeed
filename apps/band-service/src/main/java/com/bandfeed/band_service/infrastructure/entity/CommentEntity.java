@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "comments")
@@ -13,20 +16,21 @@ import lombok.NoArgsConstructor;
 public class CommentEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long postId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID postId;
 
-    @Column(nullable = false)
-    private Long authorId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID authorId;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private CommentEntity(Long id, Long postId, Long authorId, String content) {
+    private CommentEntity(UUID id, UUID postId, UUID authorId, String content) {
         this.id = id;
         this.postId = postId;
         this.authorId = authorId;

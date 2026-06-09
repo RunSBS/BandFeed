@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,17 +17,17 @@ public class FollowRepositoryImpl implements FollowRepository {
     private final FollowJpaRepository jpa;
 
     @Override
-    public Optional<Follow> findByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
+    public Optional<Follow> findByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId) {
         return jpa.findByFollowerIdAndFolloweeId(followerId, followeeId).map(FollowEntity::toDomain);
     }
 
     @Override
-    public List<Follow> findAllByFolloweeId(Long followeeId) {
+    public List<Follow> findAllByFolloweeId(UUID followeeId) {
         return jpa.findAllByFolloweeId(followeeId).stream().map(FollowEntity::toDomain).toList();
     }
 
     @Override
-    public List<Follow> findAllByFollowerId(Long followerId) {
+    public List<Follow> findAllByFollowerId(UUID followerId) {
         return jpa.findAllByFollowerId(followerId).stream().map(FollowEntity::toDomain).toList();
     }
 
@@ -41,7 +42,7 @@ public class FollowRepositoryImpl implements FollowRepository {
     }
 
     @Override
-    public boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId) {
+    public boolean existsByFollowerIdAndFolloweeId(UUID followerId, UUID followeeId) {
         return jpa.existsByFollowerIdAndFolloweeId(followerId, followeeId);
     }
 }

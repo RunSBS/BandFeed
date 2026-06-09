@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,12 +17,12 @@ public class ChatRoomMemberRepositoryImpl implements ChatRoomMemberRepository {
     private final ChatRoomMemberJpaRepository jpa;
 
     @Override
-    public Optional<ChatRoomMember> findByChatRoomIdAndUserId(Long chatRoomId, Long userId) {
+    public Optional<ChatRoomMember> findByChatRoomIdAndUserId(UUID chatRoomId, UUID userId) {
         return jpa.findByChatRoomIdAndUserId(chatRoomId, userId).map(ChatRoomMemberEntity::toDomain);
     }
 
     @Override
-    public List<ChatRoomMember> findAllByChatRoomId(Long chatRoomId) {
+    public List<ChatRoomMember> findAllByChatRoomId(UUID chatRoomId) {
         return jpa.findAllByChatRoomId(chatRoomId).stream().map(ChatRoomMemberEntity::toDomain).toList();
     }
 

@@ -4,18 +4,20 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 public class InstrumentConfig {
 
-    private final Long id;
-    private final Long songId;
+    private final UUID id;
+    private final UUID songId;
     private String instrumentType;
     private String difficulty;
     private String notes;
-    private final Long registeredBy;
+    private final UUID registeredBy;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private InstrumentConfig(Long songId, String instrumentType, String difficulty, String notes, Long registeredBy) {
+    private InstrumentConfig(UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
         this.id = null;
         this.songId = songId;
         this.instrumentType = instrumentType;
@@ -24,7 +26,7 @@ public class InstrumentConfig {
         this.registeredBy = registeredBy;
     }
 
-    private InstrumentConfig(Long id, Long songId, String instrumentType, String difficulty, String notes, Long registeredBy) {
+    private InstrumentConfig(UUID id, UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
         this.id = id;
         this.songId = songId;
         this.instrumentType = instrumentType;
@@ -33,7 +35,7 @@ public class InstrumentConfig {
         this.registeredBy = registeredBy;
     }
 
-    public static InstrumentConfig create(Long songId, String instrumentType, String difficulty, String notes, Long registeredBy) {
+    public static InstrumentConfig create(UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
         return InstrumentConfig.builder()
                 .songId(songId)
                 .instrumentType(instrumentType)
@@ -43,8 +45,8 @@ public class InstrumentConfig {
                 .build();
     }
 
-    public static InstrumentConfig reconstitute(Long id, Long songId, String instrumentType,
-                                                String difficulty, String notes, Long registeredBy) {
+    public static InstrumentConfig reconstitute(UUID id, UUID songId, String instrumentType,
+                                                String difficulty, String notes, UUID registeredBy) {
         return new InstrumentConfig(id, songId, instrumentType, difficulty, notes, registeredBy);
     }
 

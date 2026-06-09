@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,12 +17,12 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostJpaRepository jpa;
 
     @Override
-    public Optional<Post> findById(Long id) {
+    public Optional<Post> findById(UUID id) {
         return jpa.findById(id).map(PostEntity::toDomain);
     }
 
     @Override
-    public List<Post> findAllBySongId(Long songId) {
+    public List<Post> findAllBySongId(UUID songId) {
         return jpa.findAllBySongId(songId).stream().map(PostEntity::toDomain).toList();
     }
 

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/bands")
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class BandController implements BandControllerDocs {
     }
 
     @Override
-    public ResponseEntity<?> getBand(Long bandId) {
+    public ResponseEntity<?> getBand(UUID bandId) {
         return null;
     }
 
@@ -27,27 +29,27 @@ public class BandController implements BandControllerDocs {
     }
 
     @Override
-    public ResponseEntity<?> disbandBand(Long bandId) {
+    public ResponseEntity<?> disbandBand(UUID bandId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> inviteMember(Long bandId, Object request) {
+    public ResponseEntity<?> inviteMember(UUID bandId, Object request) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> acceptInvite(Long bandId) {
+    public ResponseEntity<?> acceptInvite(UUID bandId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> leave(Long bandId) {
+    public ResponseEntity<?> leave(UUID bandId) {
         return null;
     }
 
     @Override
-    public ResponseEntity<?> transferLeader(Long bandId, Object request) {
+    public ResponseEntity<?> transferLeader(UUID bandId, Object request) {
         return null;
     }
 }

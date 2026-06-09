@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,12 +17,12 @@ public class TimelinePostRepositoryImpl implements TimelinePostRepository {
     private final TimelinePostJpaRepository jpa;
 
     @Override
-    public Optional<TimelinePost> findById(Long id) {
+    public Optional<TimelinePost> findById(UUID id) {
         return jpa.findById(id).map(TimelinePostEntity::toDomain);
     }
 
     @Override
-    public List<TimelinePost> findAllByBandId(Long bandId) {
+    public List<TimelinePost> findAllByBandId(UUID bandId) {
         return jpa.findAllByBandId(bandId).stream().map(TimelinePostEntity::toDomain).toList();
     }
 

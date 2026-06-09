@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class SongRepositoryImpl implements SongRepository {
     private final SongJpaRepository jpa;
 
     @Override
-    public Optional<Song> findById(Long id) {
+    public Optional<Song> findById(UUID id) {
         return jpa.findById(id).map(SongEntity::toDomain);
     }
 

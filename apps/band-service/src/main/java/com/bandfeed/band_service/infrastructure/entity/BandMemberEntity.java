@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "band_members")
@@ -14,21 +17,22 @@ import lombok.NoArgsConstructor;
 public class BandMemberEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long bandId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID bandId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BandRole role;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private BandMemberEntity(Long id, Long bandId, Long userId, BandRole role) {
+    private BandMemberEntity(UUID id, UUID bandId, UUID userId, BandRole role) {
         this.id = id;
         this.bandId = bandId;
         this.userId = userId;

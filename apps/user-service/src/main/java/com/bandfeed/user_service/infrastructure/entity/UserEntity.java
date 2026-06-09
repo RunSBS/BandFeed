@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -14,8 +17,9 @@ import lombok.NoArgsConstructor;
 public class UserEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -36,7 +40,7 @@ public class UserEntity extends BaseEntity {
     private UserRole role;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private UserEntity(Long id, String email, String password, String nickname,
+    private UserEntity(UUID id, String email, String password, String nickname,
                        String profileImageUrl, String introduction, UserRole role) {
         this.id = id;
         this.email = email;

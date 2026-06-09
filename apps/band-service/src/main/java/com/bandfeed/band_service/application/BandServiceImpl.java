@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -32,33 +33,34 @@ public class BandServiceImpl implements BandService {
 
     @Override
     @Transactional(readOnly = true)
-    public Band findById(Long bandId) {
+    public Band findById(UUID bandId) {
         return bandRepository.findById(bandId)
                 .orElseThrow(() -> new RuntimeException("Band not found: " + bandId));
     }
 
     @Override
-    public Band updateInfo(Long bandId, String name, String description, Long requesterId) {
+    public Band updateInfo(UUID bandId, String name, String description, UUID requesterId) {
         Band band = findById(bandId);
         band.updateInfo(name, description);
         return bandRepository.save(band);
     }
 
     @Override
-    public void disband(Long bandId, Long requesterId) {
+    public void disband(UUID bandId, UUID requesterId) {
         Band band = findById(bandId);
-        band.disband();
-        bandRepository.save(band);
+        // TODO: 밴드 해체 시 wiki-service, chat-service의 연관 데이터 정리 필요
+        // 추후 BandDisbandedEvent를 Kafka로 publish하여 이벤트 기반으로 처리 예정
+        bandRepository.delete(band);
     }
 
     @Override
-    public BandMember inviteMember(Long bandId, Long userId, Long requesterId) {
+    public BandMember inviteMember(UUID bandId, UUID userId, UUID requesterId) {
         BandMember member = BandMember.create(bandId, userId, BandRole.MEMBER);
         return bandMemberRepository.save(member);
     }
 
     @Override
-    public void kickOrLeave(Long bandId, Long userId, Long requesterId) {
+    public void kickOrLeave(UUID bandId, UUID userId, UUID requesterId) {
         BandMember member = bandMemberRepository.findByBandIdAndUserId(bandId, userId)
                 .orElseThrow(() -> new RuntimeException("BandMember not found"));
         bandMemberRepository.delete(member);
@@ -66,7 +68,7 @@ public class BandServiceImpl implements BandService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BandMember> findMembers(Long bandId) {
+    public List<BandMember> findMembers(UUID bandId) {
         return bandMemberRepository.findAllByBandId(bandId);
     }
 }

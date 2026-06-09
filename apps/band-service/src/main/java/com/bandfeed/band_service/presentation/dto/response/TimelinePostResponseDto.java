@@ -3,11 +3,12 @@ package com.bandfeed.band_service.presentation.dto.response;
 import com.bandfeed.band_service.domain.model.TimelinePost;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TimelinePostResponseDto(
-        Long id,
-        Long bandId,
-        Long authorId,
+        UUID id,
+        UUID bandId,
+        UUID authorId,
         String title,
         String content,
         LocalDateTime createdAt

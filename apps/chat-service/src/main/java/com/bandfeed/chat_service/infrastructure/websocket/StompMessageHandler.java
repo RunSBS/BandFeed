@@ -9,6 +9,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 @RequiredArgsConstructor
 public class StompMessageHandler {
@@ -18,8 +20,8 @@ public class StompMessageHandler {
 
     @MessageMapping("/chat/{roomId}/send")
     public void sendMessage(
-            @DestinationVariable Long roomId,
-            @Header("senderId") Long senderId,
+            @DestinationVariable UUID roomId,
+            @Header("senderId") UUID senderId,
             String content
     ) {
         ChatMessage message = chatMessageService.sendMessage(roomId, senderId, content);

@@ -1,5 +1,7 @@
 package com.bandfeed.user_service.presentation.dto.request;
 
+import java.util.UUID;
+
 public record FollowRequestDto(
-        Long followeeId
+        UUID followeeId
 ) {}

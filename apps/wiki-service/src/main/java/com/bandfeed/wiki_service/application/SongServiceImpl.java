@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -39,26 +40,26 @@ public class SongServiceImpl implements SongService {
 
     @Override
     @Transactional(readOnly = true)
-    public Song findSong(Long songId) {
+    public Song findSong(UUID songId) {
         return songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Song not found: " + songId));
     }
 
     @Override
-    public InstrumentConfig addInstrumentConfig(Long songId, String instrumentType,
-                                                String difficulty, String notes, Long registeredBy) {
+    public InstrumentConfig addInstrumentConfig(UUID songId, String instrumentType,
+                                                String difficulty, String notes, UUID registeredBy) {
         InstrumentConfig config = InstrumentConfig.create(songId, instrumentType, difficulty, notes, registeredBy);
         return instrumentConfigRepository.save(config);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<InstrumentConfig> findInstrumentConfigs(Long songId) {
+    public List<InstrumentConfig> findInstrumentConfigs(UUID songId) {
         return instrumentConfigRepository.findAllBySongId(songId);
     }
 
     @Override
-    public void deleteInstrumentConfig(Long configId) {
+    public void deleteInstrumentConfig(UUID configId) {
         throw new UnsupportedOperationException("InstrumentConfigRepository.findById 추가 후 작성");
     }
 }

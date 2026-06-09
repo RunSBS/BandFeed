@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @Transactional
@@ -34,27 +36,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findById(Long userId) {
+    public User findById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
     }
 
     @Override
-    public User updateProfile(Long userId, String nickname, String profileImageUrl, String introduction) {
+    public User updateProfile(UUID userId, String nickname, String profileImageUrl, String introduction) {
         User user = findById(userId);
         user.updateProfile(nickname, profileImageUrl, introduction);
         return userRepository.save(user);
     }
 
     @Override
-    public void changePassword(Long userId, String oldPassword, String newPassword) {
+    public void changePassword(UUID userId, String oldPassword, String newPassword) {
         User user = findById(userId);
         user.changePassword(newPassword);
         userRepository.save(user);
     }
 
     @Override
-    public void withdraw(Long userId) {
+    public void withdraw(UUID userId) {
         User user = findById(userId);
         userRepository.delete(user);
     }

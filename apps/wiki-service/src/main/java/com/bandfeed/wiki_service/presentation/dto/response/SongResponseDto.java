@@ -2,8 +2,10 @@ package com.bandfeed.wiki_service.presentation.dto.response;
 
 import com.bandfeed.wiki_service.domain.model.Song;
 
+import java.util.UUID;
+
 public record SongResponseDto(
-        Long id,
+        UUID id,
         String spotifyTrackId,
         String title,
         String artist,

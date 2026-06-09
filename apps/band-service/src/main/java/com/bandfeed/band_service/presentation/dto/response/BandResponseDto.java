@@ -3,13 +3,13 @@ package com.bandfeed.band_service.presentation.dto.response;
 import com.bandfeed.band_service.domain.model.Band;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record BandResponseDto(
-        Long id,
+        UUID id,
         String name,
         String description,
-        Long leaderId,
-        String status,
+        UUID leaderId,
         LocalDateTime createdAt
 ) {
     public static BandResponseDto from(Band band) {
@@ -18,7 +18,6 @@ public record BandResponseDto(
                 band.getName(),
                 band.getDescription(),
                 band.getLeaderId(),
-                band.getStatus().name(),
                 band.getCreatedAt()
         );
     }

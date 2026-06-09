@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -18,7 +19,7 @@ public class FollowServiceImpl implements FollowService {
     private final FollowRepository followRepository;
 
     @Override
-    public Follow follow(Long followerId, Long followeeId) {
+    public Follow follow(UUID followerId, UUID followeeId) {
         if (followRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
             throw new RuntimeException("Already following");
         }
@@ -27,7 +28,7 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void unfollow(Long followerId, Long followeeId) {
+    public void unfollow(UUID followerId, UUID followeeId) {
         Follow follow = followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
                 .orElseThrow(() -> new RuntimeException("Follow not found"));
         followRepository.delete(follow);
@@ -35,13 +36,13 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Follow> findFollowers(Long userId) {
+    public List<Follow> findFollowers(UUID userId) {
         return followRepository.findAllByFolloweeId(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Follow> findFollowings(Long userId) {
+    public List<Follow> findFollowings(UUID userId) {
         return followRepository.findAllByFollowerId(userId);
     }
 }

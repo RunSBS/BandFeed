@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "songs")
@@ -13,8 +16,9 @@ import lombok.NoArgsConstructor;
 public class SongEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String spotifyTrackId;
@@ -33,7 +37,7 @@ public class SongEntity extends BaseEntity {
     private int durationMs;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private SongEntity(Long id, String spotifyTrackId, String title, String artist,
+    private SongEntity(UUID id, String spotifyTrackId, String title, String artist,
                        String albumName, String albumImageUrl, int durationMs) {
         this.id = id;
         this.spotifyTrackId = spotifyTrackId;

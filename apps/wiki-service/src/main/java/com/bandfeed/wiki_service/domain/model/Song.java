@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class Song {
 
-    private final Long id;
+    private final UUID id;
     private final String spotifyTrackId;
     private String title;
     private String artist;
@@ -30,7 +31,7 @@ public class Song {
         this.registeredAt = null;
     }
 
-    private Song(Long id, String spotifyTrackId, String title, String artist, String albumName,
+    private Song(UUID id, String spotifyTrackId, String title, String artist, String albumName,
                  String albumImageUrl, int durationMs, LocalDateTime registeredAt) {
         this.id = id;
         this.spotifyTrackId = spotifyTrackId;
@@ -54,7 +55,7 @@ public class Song {
                 .build();
     }
 
-    public static Song reconstitute(Long id, String spotifyTrackId, String title, String artist,
+    public static Song reconstitute(UUID id, String spotifyTrackId, String title, String artist,
                                     String albumName, String albumImageUrl, int durationMs, LocalDateTime registeredAt) {
         return new Song(id, spotifyTrackId, title, artist, albumName, albumImageUrl, durationMs, registeredAt);
     }

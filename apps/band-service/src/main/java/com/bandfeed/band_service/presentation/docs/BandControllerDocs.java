@@ -2,20 +2,22 @@ package com.bandfeed.band_service.presentation.docs;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 public interface BandControllerDocs {
     ResponseEntity<?> createBand(Object request);
 
-    ResponseEntity<?> getBand(Long bandId);
+    ResponseEntity<?> getBand(UUID bandId);
 
     ResponseEntity<?> listBands(int page, int size);
 
-    ResponseEntity<?> disbandBand(Long bandId);
+    ResponseEntity<?> disbandBand(UUID bandId);
 
-    ResponseEntity<?> inviteMember(Long bandId, Object request);
+    ResponseEntity<?> inviteMember(UUID bandId, Object request);
 
-    ResponseEntity<?> acceptInvite(Long bandId);
+    ResponseEntity<?> acceptInvite(UUID bandId);
 
-    ResponseEntity<?> leave(Long bandId);
+    ResponseEntity<?> leave(UUID bandId);
 
-    ResponseEntity<?> transferLeader(Long bandId, Object request);
+    ResponseEntity<?> transferLeader(UUID bandId, Object request);
 }

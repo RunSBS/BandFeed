@@ -5,20 +5,21 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 public class Post {
 
-    private final Long id;
-    private final Long songId;
-    private final Long authorId;
+    private final UUID id;
+    private final UUID songId;
+    private final UUID authorId;
     private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Post(Long songId, Long authorId, String title, String content) {
+    private Post(UUID songId, UUID authorId, String title, String content) {
         this.id = null;
         this.songId = songId;
         this.authorId = authorId;
@@ -28,7 +29,7 @@ public class Post {
         this.updatedAt = null;
     }
 
-    private Post(Long id, Long songId, Long authorId, String title, String content,
+    private Post(UUID id, UUID songId, UUID authorId, String title, String content,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.songId = songId;
@@ -39,7 +40,7 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public static Post create(Long songId, Long authorId, String title, String content) {
+    public static Post create(UUID songId, UUID authorId, String title, String content) {
         return Post.builder()
                 .songId(songId)
                 .authorId(authorId)
@@ -48,7 +49,7 @@ public class Post {
                 .build();
     }
 
-    public static Post reconstitute(Long id, Long songId, Long authorId, String title, String content,
+    public static Post reconstitute(UUID id, UUID songId, UUID authorId, String title, String content,
                                     LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new Post(id, songId, authorId, title, content, createdAt, updatedAt);
     }

@@ -1,7 +1,9 @@
 package com.bandfeed.wiki_service.presentation.dto.request;
 
+import java.util.UUID;
+
 public record CreatePostRequestDto(
-        Long songId,
+        UUID songId,
         String title,
         String content
 ) {}

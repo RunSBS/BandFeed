@@ -5,6 +5,7 @@ import com.bandfeed.wiki_service.domain.model.InstrumentConfig;
 import com.bandfeed.wiki_service.domain.model.Song;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface SongService {
 
@@ -12,10 +13,10 @@ public interface SongService {
 
     Song registerSong(String spotifyTrackId, String title, String artist,
                       String albumName, String albumImageUrl, int durationMs);
-    Song findSong(Long songId);
+    Song findSong(UUID songId);
 
-    InstrumentConfig addInstrumentConfig(Long songId, String instrumentType,
-                                         String difficulty, String notes, Long registeredBy);
-    List<InstrumentConfig> findInstrumentConfigs(Long songId);
-    void deleteInstrumentConfig(Long configId);
+    InstrumentConfig addInstrumentConfig(UUID songId, String instrumentType,
+                                         String difficulty, String notes, UUID registeredBy);
+    List<InstrumentConfig> findInstrumentConfigs(UUID songId);
+    void deleteInstrumentConfig(UUID configId);
 }

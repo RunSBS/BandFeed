@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface ChatRoomMemberJpaRepository extends JpaRepository<ChatRoomMemberEntity, Long> {
-    Optional<ChatRoomMemberEntity> findByChatRoomIdAndUserId(Long chatRoomId, Long userId);
-    List<ChatRoomMemberEntity> findAllByChatRoomId(Long chatRoomId);
+public interface ChatRoomMemberJpaRepository extends JpaRepository<ChatRoomMemberEntity, UUID> {
+    Optional<ChatRoomMemberEntity> findByChatRoomIdAndUserId(UUID chatRoomId, UUID userId);
+    List<ChatRoomMemberEntity> findAllByChatRoomId(UUID chatRoomId);
 }

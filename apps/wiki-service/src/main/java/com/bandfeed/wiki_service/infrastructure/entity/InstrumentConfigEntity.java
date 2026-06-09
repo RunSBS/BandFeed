@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "instrument_configs")
@@ -13,11 +16,12 @@ import lombok.NoArgsConstructor;
 public class InstrumentConfigEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long songId;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID songId;
 
     @Column(nullable = false)
     private String instrumentType;
@@ -28,12 +32,12 @@ public class InstrumentConfigEntity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Column(nullable = false)
-    private Long registeredBy;
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID registeredBy;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private InstrumentConfigEntity(Long id, Long songId, String instrumentType,
-                                   String difficulty, String notes, Long registeredBy) {
+    private InstrumentConfigEntity(UUID id, UUID songId, String instrumentType,
+                                   String difficulty, String notes, UUID registeredBy) {
         this.id = id;
         this.songId = songId;
         this.instrumentType = instrumentType;
