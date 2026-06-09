@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TimelinePostRepository {
+    TimelinePost save(TimelinePost post);
     Optional<TimelinePost> findById(UUID id);
     List<TimelinePost> findAllByBandId(UUID bandId);
-    TimelinePost save(TimelinePost post);
     void delete(TimelinePost post);
 }

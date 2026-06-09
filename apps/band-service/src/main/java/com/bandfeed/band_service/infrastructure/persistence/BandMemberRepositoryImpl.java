@@ -17,6 +17,11 @@ public class BandMemberRepositoryImpl implements BandMemberRepository {
     private final BandMemberJpaRepository jpa;
 
     @Override
+    public BandMember save(BandMember member) {
+        return jpa.save(BandMemberEntity.from(member)).toDomain();
+    }
+
+    @Override
     public Optional<BandMember> findByBandIdAndUserId(UUID bandId, UUID userId) {
         return jpa.findByBandIdAndUserId(bandId, userId).map(BandMemberEntity::toDomain);
     }
@@ -24,11 +29,6 @@ public class BandMemberRepositoryImpl implements BandMemberRepository {
     @Override
     public List<BandMember> findAllByBandId(UUID bandId) {
         return jpa.findAllByBandId(bandId).stream().map(BandMemberEntity::toDomain).toList();
-    }
-
-    @Override
-    public BandMember save(BandMember member) {
-        return jpa.save(BandMemberEntity.from(member)).toDomain();
     }
 
     @Override

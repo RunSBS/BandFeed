@@ -17,6 +17,11 @@ public class TimelinePostRepositoryImpl implements TimelinePostRepository {
     private final TimelinePostJpaRepository jpa;
 
     @Override
+    public TimelinePost save(TimelinePost post) {
+        return jpa.save(TimelinePostEntity.from(post)).toDomain();
+    }
+
+    @Override
     public Optional<TimelinePost> findById(UUID id) {
         return jpa.findById(id).map(TimelinePostEntity::toDomain);
     }
@@ -24,11 +29,6 @@ public class TimelinePostRepositoryImpl implements TimelinePostRepository {
     @Override
     public List<TimelinePost> findAllByBandId(UUID bandId) {
         return jpa.findAllByBandId(bandId).stream().map(TimelinePostEntity::toDomain).toList();
-    }
-
-    @Override
-    public TimelinePost save(TimelinePost post) {
-        return jpa.save(TimelinePostEntity.from(post)).toDomain();
     }
 
     @Override

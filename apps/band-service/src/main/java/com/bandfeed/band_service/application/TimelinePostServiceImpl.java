@@ -19,34 +19,34 @@ public class TimelinePostServiceImpl implements TimelinePostService {
     private final TimelinePostRepository timelinePostRepository;
 
     @Override
-    public TimelinePost createPost(UUID bandId, UUID authorId, String title, String content) {
+    public TimelinePost createTimelinePost(UUID bandId, UUID authorId, String title, String content) {
         TimelinePost post = TimelinePost.create(bandId, authorId, title, content);
         return timelinePostRepository.save(post);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TimelinePost findPost(UUID postId) {
+    public TimelinePost findTimelinePostById(UUID postId) {
         return timelinePostRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("TimelinePost not found: " + postId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TimelinePost> findPosts(UUID bandId) {
+    public List<TimelinePost> findAllTimelinePost(UUID bandId) {
         return timelinePostRepository.findAllByBandId(bandId);
     }
 
     @Override
-    public TimelinePost updatePost(UUID postId, String title, String content, UUID requesterId) {
-        TimelinePost post = findPost(postId);
+    public TimelinePost updateTimelinePostInfo(UUID postId, String title, String content, UUID requesterId) {
+        TimelinePost post = findTimelinePostById(postId);
         post.update(title, content);
         return timelinePostRepository.save(post);
     }
 
     @Override
-    public void deletePost(UUID postId, UUID requesterId) {
-        TimelinePost post = findPost(postId);
+    public void deleteTimelinePost(UUID postId, UUID requesterId) {
+        TimelinePost post = findTimelinePostById(postId);
         timelinePostRepository.delete(post);
     }
 }

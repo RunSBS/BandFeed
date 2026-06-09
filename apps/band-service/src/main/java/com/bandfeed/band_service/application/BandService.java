@@ -3,18 +3,26 @@ package com.bandfeed.band_service.application;
 import com.bandfeed.band_service.application.dto.command.CreateBandCommand;
 import com.bandfeed.band_service.domain.model.Band;
 import com.bandfeed.band_service.domain.model.BandMember;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface BandService {
 
-    Band create(CreateBandCommand command);
-    Band findById(UUID bandId);
-    Band updateInfo(UUID bandId, String name, String description, UUID requesterId);
-    void disband(UUID bandId, UUID requesterId);
+    // ── Band CRUD ─────────────────────────────────────────────────────────────
+    Band createBand(CreateBandCommand command);
+    Band findBandById(UUID bandId);
+    Page<Band> findAllBand(Pageable pageable);
+    Band updateBandInfo(UUID bandId, String name, String description, UUID requesterId);
+    void deleteBand(UUID bandId, UUID requesterId);
 
-    BandMember inviteMember(UUID bandId, UUID userId, UUID requesterId);
-    void kickOrLeave(UUID bandId, UUID userId, UUID requesterId);
-    List<BandMember> findMembers(UUID bandId);
+    // ── BandMember CRUD ───────────────────────────────────────────────────────
+    BandMember inviteBandMember(UUID bandId, UUID userId, UUID requesterId);
+    List<BandMember> findAllBandMember(UUID bandId);
+    void removeBandMember(UUID bandId, UUID userId, UUID requesterId);
+
+    // ── 상태 변경 ──────────────────────────────────────────────────────────────
+    Band transferBandLeader(UUID bandId, UUID newLeaderId, UUID requesterId);
 }

@@ -1,11 +1,21 @@
 package com.bandfeed.band_service.presentation.controller;
 
+import com.bandfeed.band_service.application.CommentService;
+import com.bandfeed.band_service.application.TimelinePostService;
+import com.bandfeed.band_service.domain.model.Comment;
+import com.bandfeed.band_service.domain.model.TimelinePost;
 import com.bandfeed.band_service.presentation.docs.TimelinePostControllerDocs;
+import com.bandfeed.band_service.presentation.dto.request.CreateCommentRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.CreateTimelinePostRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.UpdateTimelinePostRequestDto;
+import com.bandfeed.band_service.presentation.dto.response.CommentResponseDto;
+import com.bandfeed.band_service.presentation.dto.response.TimelinePostResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -13,38 +23,74 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TimelinePostController implements TimelinePostControllerDocs {
 
+    private final TimelinePostService timelinePostService;
+    private final CommentService commentService;
+
+    // ── TimelinePost CRUD ─────────────────────────────────────────────────────
+
     @Override
-    public ResponseEntity<?> createPost(UUID bandId, Object request) {
-        return null;
+    @PostMapping
+    public ResponseEntity<?> createTimelinePost(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody CreateTimelinePostRequestDto request) {
+        TimelinePost post = timelinePostService.createTimelinePost(request.bandId(), userId, request.title(), request.content());
+        return ResponseEntity.status(HttpStatus.CREATED).body(TimelinePostResponseDto.from(post));
     }
 
     @Override
-    public ResponseEntity<?> getPost(UUID postId) {
-        return null;
+    @GetMapping("/{postId}")
+    public ResponseEntity<?> findTimelinePostById(@PathVariable UUID postId) {
+        return ResponseEntity.ok(TimelinePostResponseDto.from(timelinePostService.findTimelinePostById(postId)));
     }
 
     @Override
-    public ResponseEntity<?> listPosts(UUID bandId, int page, int size) {
-        return null;
+    @GetMapping
+    public ResponseEntity<?> findAllTimelinePost(
+            @RequestParam UUID bandId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        List<TimelinePost> posts = timelinePostService.findAllTimelinePost(bandId);
+        return ResponseEntity.ok(posts.stream().map(TimelinePostResponseDto::from).toList());
     }
 
     @Override
-    public ResponseEntity<?> updatePost(UUID postId, Object request) {
-        return null;
+    @PatchMapping("/{postId}")
+    public ResponseEntity<?> updateTimelinePostInfo(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody UpdateTimelinePostRequestDto request) {
+        TimelinePost post = timelinePostService.updateTimelinePostInfo(postId, request.title(), request.content(), userId);
+        return ResponseEntity.ok(TimelinePostResponseDto.from(post));
     }
 
     @Override
-    public ResponseEntity<?> deletePost(UUID postId) {
-        return null;
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deleteTimelinePost(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId) {
+        timelinePostService.deleteTimelinePost(postId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ── Comment CRUD ──────────────────────────────────────────────────────────
+
+    @Override
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<?> createTimelinePostComment(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody CreateCommentRequestDto request) {
+        Comment comment = commentService.createTimelinePostComment(postId, userId, request.content());
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponseDto.from(comment));
     }
 
     @Override
-    public ResponseEntity<?> createComment(UUID postId, Object request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<?> deleteComment(UUID commentId) {
-        return null;
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<?> deleteTimelinePostComment(
+            @PathVariable UUID postId,
+            @PathVariable UUID commentId,
+            @RequestHeader("X-User-Id") UUID userId) {
+        commentService.deleteTimelinePostComment(commentId, userId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,23 +1,64 @@
 package com.bandfeed.band_service.presentation.docs;
 
+import com.bandfeed.band_service.presentation.dto.request.CreateBandRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.InviteMemberRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.TransferLeaderRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.UpdateBandRequestDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 public interface BandControllerDocs {
-    ResponseEntity<?> createBand(Object request);
 
-    ResponseEntity<?> getBand(UUID bandId);
+    // ── Band CRUD ─────────────────────────────────────────────────────────────
 
-    ResponseEntity<?> listBands(int page, int size);
+    @PostMapping
+    ResponseEntity<?> createBand(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody CreateBandRequestDto request);
 
-    ResponseEntity<?> disbandBand(UUID bandId);
+    @GetMapping("/{bandId}")
+    ResponseEntity<?> findBandById(@PathVariable UUID bandId);
 
-    ResponseEntity<?> inviteMember(UUID bandId, Object request);
+    @GetMapping
+    ResponseEntity<?> findAllBand(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size);
 
-    ResponseEntity<?> acceptInvite(UUID bandId);
+    @PatchMapping("/{bandId}")
+    ResponseEntity<?> updateBandInfo(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody UpdateBandRequestDto request);
 
-    ResponseEntity<?> leave(UUID bandId);
+    @DeleteMapping("/{bandId}")
+    ResponseEntity<?> disbandBand(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId);
 
-    ResponseEntity<?> transferLeader(UUID bandId, Object request);
+    // ── BandMember CRUD ───────────────────────────────────────────────────────
+
+    @PostMapping("/{bandId}/members")
+    ResponseEntity<?> inviteBandMember(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody InviteMemberRequestDto request);
+
+    @GetMapping("/{bandId}/members")
+    ResponseEntity<?> findAllBandMember(@PathVariable UUID bandId);
+
+    @DeleteMapping("/{bandId}/members/{targetUserId}")
+    ResponseEntity<?> removeBandMember(
+            @PathVariable UUID bandId,
+            @PathVariable UUID targetUserId,
+            @RequestHeader("X-User-Id") UUID userId);
+
+    // ── 상태 변경 ──────────────────────────────────────────────────────────────
+
+    @PatchMapping("/{bandId}/leader")
+    ResponseEntity<?> transferBandLeader(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody TransferLeaderRequestDto request);
 }

@@ -1,21 +1,53 @@
 package com.bandfeed.band_service.presentation.docs;
 
+import com.bandfeed.band_service.presentation.dto.request.CreateCommentRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.CreateTimelinePostRequestDto;
+import com.bandfeed.band_service.presentation.dto.request.UpdateTimelinePostRequestDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 public interface TimelinePostControllerDocs {
-    ResponseEntity<?> createPost(UUID bandId, Object request);
 
-    ResponseEntity<?> getPost(UUID postId);
+    // ── TimelinePost CRUD ─────────────────────────────────────────────────────
 
-    ResponseEntity<?> listPosts(UUID bandId, int page, int size);
+    @PostMapping
+    ResponseEntity<?> createTimelinePost(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody CreateTimelinePostRequestDto request);
 
-    ResponseEntity<?> updatePost(UUID postId, Object request);
+    @GetMapping("/{postId}")
+    ResponseEntity<?> findTimelinePostById(@PathVariable UUID postId);
 
-    ResponseEntity<?> deletePost(UUID postId);
+    @GetMapping
+    ResponseEntity<?> findAllTimelinePost(
+            @RequestParam UUID bandId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size);
 
-    ResponseEntity<?> createComment(UUID postId, Object request);
+    @PatchMapping("/{postId}")
+    ResponseEntity<?> updateTimelinePostInfo(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody UpdateTimelinePostRequestDto request);
 
-    ResponseEntity<?> deleteComment(UUID commentId);
+    @DeleteMapping("/{postId}")
+    ResponseEntity<?> deleteTimelinePost(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId);
+
+    // ── Comment CRUD ──────────────────────────────────────────────────────────
+
+    @PostMapping("/{postId}/comments")
+    ResponseEntity<?> createTimelinePostComment(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody CreateCommentRequestDto request);
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    ResponseEntity<?> deleteTimelinePostComment(
+            @PathVariable UUID postId,
+            @PathVariable UUID commentId,
+            @RequestHeader("X-User-Id") UUID userId);
 }
