@@ -13,27 +13,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatRoomMemberRepositoryImpl implements ChatRoomMemberRepository {
 
-    private final JpaChatRoomMemberRepository jpaChatRoomMemberRepository;
+    private final ChatRoomMemberJpaRepository jpa;
 
     @Override
     public Optional<ChatRoomMember> findByChatRoomIdAndUserId(Long chatRoomId, Long userId) {
-        return jpaChatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
-                .map(ChatRoomMemberEntity::toDomain);
+        return jpa.findByChatRoomIdAndUserId(chatRoomId, userId).map(ChatRoomMemberEntity::toDomain);
     }
 
     @Override
     public List<ChatRoomMember> findAllByChatRoomId(Long chatRoomId) {
-        return jpaChatRoomMemberRepository.findAllByChatRoomId(chatRoomId).stream()
-                .map(ChatRoomMemberEntity::toDomain).toList();
+        return jpa.findAllByChatRoomId(chatRoomId).stream().map(ChatRoomMemberEntity::toDomain).toList();
     }
 
     @Override
     public ChatRoomMember save(ChatRoomMember member) {
-        return jpaChatRoomMemberRepository.save(ChatRoomMemberEntity.from(member)).toDomain();
+        return jpa.save(ChatRoomMemberEntity.from(member)).toDomain();
     }
 
     @Override
     public void delete(ChatRoomMember member) {
-        jpaChatRoomMemberRepository.deleteById(member.getId());
+        jpa.deleteById(member.getId());
     }
 }

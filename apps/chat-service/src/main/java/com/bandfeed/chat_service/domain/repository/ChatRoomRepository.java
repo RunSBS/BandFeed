@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ChatRoomRepository {
     Optional<ChatRoom> findById(Long id);
-    Optional<ChatRoom> findByBandId(Long bandId);
+    Optional<ChatRoom> findByParticipants(Long userAId, Long userBId);
     ChatRoom save(ChatRoom chatRoom);
     void delete(ChatRoom chatRoom);
 }

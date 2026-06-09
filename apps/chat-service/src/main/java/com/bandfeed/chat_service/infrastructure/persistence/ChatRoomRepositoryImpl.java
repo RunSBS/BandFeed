@@ -12,25 +12,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
-    private final JpaChatRoomRepository jpaChatRoomRepository;
+    private final ChatRoomJpaRepository jpa;
 
     @Override
     public Optional<ChatRoom> findById(Long id) {
-        return jpaChatRoomRepository.findById(id).map(ChatRoomEntity::toDomain);
+        return jpa.findById(id).map(ChatRoomEntity::toDomain);
     }
 
     @Override
-    public Optional<ChatRoom> findByBandId(Long bandId) {
-        return jpaChatRoomRepository.findByBandId(bandId).map(ChatRoomEntity::toDomain);
+    public Optional<ChatRoom> findByParticipants(Long userAId, Long userBId) {
+        Long p1 = Math.min(userAId, userBId);
+        Long p2 = Math.max(userAId, userBId);
+        return jpa.findByParticipant1IdAndParticipant2Id(p1, p2).map(ChatRoomEntity::toDomain);
     }
 
     @Override
     public ChatRoom save(ChatRoom chatRoom) {
-        return jpaChatRoomRepository.save(ChatRoomEntity.from(chatRoom)).toDomain();
+        return jpa.save(ChatRoomEntity.from(chatRoom)).toDomain();
     }
 
     @Override
     public void delete(ChatRoom chatRoom) {
-        jpaChatRoomRepository.deleteById(chatRoom.getId());
+        jpa.deleteById(chatRoom.getId());
     }
 }

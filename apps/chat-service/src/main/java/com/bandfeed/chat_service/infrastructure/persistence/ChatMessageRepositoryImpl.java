@@ -14,22 +14,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatMessageRepositoryImpl implements ChatMessageRepository {
 
-    private final JpaChatMessageRepository jpaChatMessageRepository;
+    private final ChatMessageJpaRepository jpa;
 
     @Override
     public Optional<ChatMessage> findById(Long id) {
-        return jpaChatMessageRepository.findById(id).map(ChatMessageEntity::toDomain);
+        return jpa.findById(id).map(ChatMessageEntity::toDomain);
     }
 
     @Override
     public List<ChatMessage> findByChatRoomIdAndIdLessThanOrderByIdDesc(Long chatRoomId, Long beforeId, int size) {
-        return jpaChatMessageRepository
-                .findByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, beforeId, PageRequest.of(0, size))
+        return jpa.findByChatRoomIdAndIdLessThanOrderByIdDesc(chatRoomId, beforeId, PageRequest.of(0, size))
                 .stream().map(ChatMessageEntity::toDomain).toList();
     }
 
     @Override
     public ChatMessage save(ChatMessage message) {
-        return jpaChatMessageRepository.save(ChatMessageEntity.from(message)).toDomain();
+        return jpa.save(ChatMessageEntity.from(message)).toDomain();
     }
 }
