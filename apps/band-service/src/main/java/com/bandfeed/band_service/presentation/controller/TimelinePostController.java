@@ -1,6 +1,5 @@
 package com.bandfeed.band_service.presentation.controller;
 
-import com.bandfeed.band_service.application.CommentService;
 import com.bandfeed.band_service.application.TimelinePostService;
 import com.bandfeed.band_service.domain.model.Comment;
 import com.bandfeed.band_service.domain.model.TimelinePost;
@@ -24,7 +23,6 @@ import java.util.UUID;
 public class TimelinePostController implements TimelinePostControllerDocs {
 
     private final TimelinePostService timelinePostService;
-    private final CommentService commentService;
 
     // ── TimelinePost CRUD ─────────────────────────────────────────────────────
 
@@ -80,7 +78,7 @@ public class TimelinePostController implements TimelinePostControllerDocs {
             @PathVariable UUID postId,
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody CreateCommentRequestDto request) {
-        Comment comment = commentService.createTimelinePostComment(postId, userId, request.content());
+        Comment comment = timelinePostService.createTimelinePostComment(postId, userId, request.content());
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponseDto.from(comment));
     }
 
@@ -90,7 +88,7 @@ public class TimelinePostController implements TimelinePostControllerDocs {
             @PathVariable UUID postId,
             @PathVariable UUID commentId,
             @RequestHeader("X-User-Id") UUID userId) {
-        commentService.deleteTimelinePostComment(commentId, userId);
+        timelinePostService.deleteTimelinePostComment(commentId, userId);
         return ResponseEntity.noContent().build();
     }
 }
