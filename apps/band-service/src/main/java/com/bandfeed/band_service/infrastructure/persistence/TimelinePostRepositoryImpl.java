@@ -13,7 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimelinePostRepositoryImpl implements TimelinePostRepository {
 
-    private final JpaTimelinePostRepository jpa;
+    private final TimelinePostJpaRepository jpa;
 
     @Override
     public Optional<TimelinePost> findById(Long id) {
