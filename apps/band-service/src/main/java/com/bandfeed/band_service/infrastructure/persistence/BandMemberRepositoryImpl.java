@@ -13,7 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BandMemberRepositoryImpl implements BandMemberRepository {
 
-    private final JpaBandMemberRepository jpa;
+    private final BandMemberJpaRepository jpa;
 
     @Override
     public Optional<BandMember> findByBandIdAndUserId(Long bandId, Long userId) {

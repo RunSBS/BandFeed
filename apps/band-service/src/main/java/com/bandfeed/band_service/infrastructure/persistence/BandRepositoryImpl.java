@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BandRepositoryImpl implements BandRepository {
 
-    private final JpaBandRepository jpa;
+    private final BandJpaRepository jpa;
 
     @Override
     public Optional<Band> findById(Long id) {
