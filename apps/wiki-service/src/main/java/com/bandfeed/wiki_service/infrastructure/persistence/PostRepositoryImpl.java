@@ -2,6 +2,7 @@ package com.bandfeed.wiki_service.infrastructure.persistence;
 
 import com.bandfeed.wiki_service.domain.model.Post;
 import com.bandfeed.wiki_service.domain.repository.PostRepository;
+import com.bandfeed.wiki_service.infrastructure.entity.PostEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,21 +17,21 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Optional<Post> findById(Long id) {
-        return jpaPostRepository.findById(id);
+        return jpaPostRepository.findById(id).map(PostEntity::toDomain);
     }
 
     @Override
     public List<Post> findAllBySongId(Long songId) {
-        return jpaPostRepository.findAllBySongId(songId);
+        return jpaPostRepository.findAllBySongId(songId).stream().map(PostEntity::toDomain).toList();
     }
 
     @Override
     public Post save(Post post) {
-        return jpaPostRepository.save(post);
+        return jpaPostRepository.save(PostEntity.from(post)).toDomain();
     }
 
     @Override
     public void delete(Post post) {
-        jpaPostRepository.delete(post);
+        jpaPostRepository.deleteById(post.getId());
     }
 }

@@ -2,6 +2,7 @@ package com.bandfeed.chat_service.infrastructure.persistence;
 
 import com.bandfeed.chat_service.domain.model.ChatRoom;
 import com.bandfeed.chat_service.domain.repository.ChatRoomRepository;
+import com.bandfeed.chat_service.infrastructure.entity.ChatRoomEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,21 +16,21 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public Optional<ChatRoom> findById(Long id) {
-        return jpaChatRoomRepository.findById(id);
+        return jpaChatRoomRepository.findById(id).map(ChatRoomEntity::toDomain);
     }
 
     @Override
     public Optional<ChatRoom> findByBandId(Long bandId) {
-        return jpaChatRoomRepository.findByBandId(bandId);
+        return jpaChatRoomRepository.findByBandId(bandId).map(ChatRoomEntity::toDomain);
     }
 
     @Override
     public ChatRoom save(ChatRoom chatRoom) {
-        return jpaChatRoomRepository.save(chatRoom);
+        return jpaChatRoomRepository.save(ChatRoomEntity.from(chatRoom)).toDomain();
     }
 
     @Override
     public void delete(ChatRoom chatRoom) {
-        jpaChatRoomRepository.delete(chatRoom);
+        jpaChatRoomRepository.deleteById(chatRoom.getId());
     }
 }

@@ -2,6 +2,7 @@ package com.bandfeed.band_service.infrastructure.persistence;
 
 import com.bandfeed.band_service.domain.model.Band;
 import com.bandfeed.band_service.domain.repository.BandRepository;
+import com.bandfeed.band_service.infrastructure.entity.BandEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,16 +16,16 @@ public class BandRepositoryImpl implements BandRepository {
 
     @Override
     public Optional<Band> findById(Long id) {
-        return jpa.findById(id);
+        return jpa.findById(id).map(BandEntity::toDomain);
     }
 
     @Override
     public Band save(Band band) {
-        return jpa.save(band);
+        return jpa.save(BandEntity.from(band)).toDomain();
     }
 
     @Override
     public void delete(Band band) {
-        jpa.delete(band);
+        jpa.deleteById(band.getId());
     }
 }

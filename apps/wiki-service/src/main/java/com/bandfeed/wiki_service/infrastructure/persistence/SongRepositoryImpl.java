@@ -2,6 +2,7 @@ package com.bandfeed.wiki_service.infrastructure.persistence;
 
 import com.bandfeed.wiki_service.domain.model.Song;
 import com.bandfeed.wiki_service.domain.repository.SongRepository;
+import com.bandfeed.wiki_service.infrastructure.entity.SongEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,21 +16,21 @@ public class SongRepositoryImpl implements SongRepository {
 
     @Override
     public Optional<Song> findById(Long id) {
-        return jpaSongRepository.findById(id);
+        return jpaSongRepository.findById(id).map(SongEntity::toDomain);
     }
 
     @Override
     public Optional<Song> findBySpotifyTrackId(String spotifyTrackId) {
-        return jpaSongRepository.findBySpotifyTrackId(spotifyTrackId);
+        return jpaSongRepository.findBySpotifyTrackId(spotifyTrackId).map(SongEntity::toDomain);
     }
 
     @Override
     public Song save(Song song) {
-        return jpaSongRepository.save(song);
+        return jpaSongRepository.save(SongEntity.from(song)).toDomain();
     }
 
     @Override
     public void delete(Song song) {
-        jpaSongRepository.delete(song);
+        jpaSongRepository.deleteById(song.getId());
     }
 }

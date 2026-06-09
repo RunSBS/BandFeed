@@ -2,6 +2,7 @@ package com.bandfeed.user_service.infrastructure.persistence;
 
 import com.bandfeed.user_service.domain.model.User;
 import com.bandfeed.user_service.domain.repository.UserRepository;
+import com.bandfeed.user_service.infrastructure.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,22 +16,22 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        return jpaUserRepository.findById(id);
+        return jpaUserRepository.findById(id).map(UserEntity::toDomain);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return jpaUserRepository.findByEmail(email);
+        return jpaUserRepository.findByEmail(email).map(UserEntity::toDomain);
     }
 
     @Override
     public User save(User user) {
-        return jpaUserRepository.save(user);
+        return jpaUserRepository.save(UserEntity.from(user)).toDomain();
     }
 
     @Override
     public void delete(User user) {
-        jpaUserRepository.delete(user);
+        jpaUserRepository.deleteById(user.getId());
     }
 
     @Override
