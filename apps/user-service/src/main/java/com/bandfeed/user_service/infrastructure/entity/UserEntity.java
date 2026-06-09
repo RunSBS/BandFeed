@@ -7,18 +7,20 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity extends BaseEntity {
+public class UserEntity extends BaseEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean isNew;
 
     @Id
-    @UuidGenerator
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false, unique = true)
@@ -41,8 +43,9 @@ public class UserEntity extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private UserEntity(UUID id, String email, String password, String nickname,
-                       String profileImageUrl, String introduction, UserRole role) {
+                       String profileImageUrl, String introduction, UserRole role, boolean isNew) {
         this.id = id;
+        this.isNew = isNew;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -54,6 +57,7 @@ public class UserEntity extends BaseEntity {
     public static UserEntity from(User domain) {
         return UserEntity.builder()
                 .id(domain.getId())
+                .isNew(!domain.isPersisted())
                 .email(domain.getEmail())
                 .password(domain.getPassword())
                 .nickname(domain.getNickname())
@@ -62,6 +66,16 @@ public class UserEntity extends BaseEntity {
                 .role(domain.getRole())
                 .build();
     }
+
+    @Override
+    public UUID getId() { return id; }
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PostPersist
+    void markNotNew() { this.isNew = false; }
 
     public User toDomain() {
         return User.reconstitute(id, email, password, nickname, profileImageUrl,

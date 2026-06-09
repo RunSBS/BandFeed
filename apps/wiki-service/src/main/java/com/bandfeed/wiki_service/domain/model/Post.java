@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Post {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID songId;
     private final UUID authorId;
     private String title;
@@ -20,7 +21,8 @@ public class Post {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Post(UUID songId, UUID authorId, String title, String content) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.songId = songId;
         this.authorId = authorId;
         this.title = title;
@@ -32,6 +34,7 @@ public class Post {
     private Post(UUID id, UUID songId, UUID authorId, String title, String content,
                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.persisted = true;
         this.songId = songId;
         this.authorId = authorId;
         this.title = title;

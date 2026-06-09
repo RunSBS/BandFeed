@@ -11,6 +11,7 @@ import java.util.UUID;
 public class BandMember {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID bandId;
     private final UUID userId;
     private BandRole role;
@@ -18,7 +19,8 @@ public class BandMember {
 
     @Builder(access = AccessLevel.PRIVATE)
     private BandMember(UUID bandId, UUID userId, BandRole role) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.bandId = bandId;
         this.userId = userId;
         this.role = role;
@@ -27,6 +29,7 @@ public class BandMember {
 
     private BandMember(UUID id, UUID bandId, UUID userId, BandRole role, LocalDateTime joinedAt) {
         this.id = id;
+        this.persisted = true;
         this.bandId = bandId;
         this.userId = userId;
         this.role = role;

@@ -10,6 +10,7 @@ import lombok.Getter;
 public class User {
 
     private final UUID id;
+    private final boolean persisted;
     private String email;
     private String password;
     private String nickname;
@@ -21,7 +22,8 @@ public class User {
 
     @Builder(access = AccessLevel.PRIVATE)
     private User(String email, String password, String nickname, String profileImageUrl) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -35,6 +37,7 @@ public class User {
     private User(UUID id, String email, String password, String nickname, String profileImageUrl,
                  String introduction, UserRole role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.persisted = true;
         this.email = email;
         this.password = password;
         this.nickname = nickname;

@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Song {
 
     private final UUID id;
+    private final boolean persisted;
     private final String spotifyTrackId;
     private String title;
     private String artist;
@@ -21,7 +22,8 @@ public class Song {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Song(String spotifyTrackId, String title, String artist, String albumName, String albumImageUrl, int durationMs) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.spotifyTrackId = spotifyTrackId;
         this.title = title;
         this.artist = artist;
@@ -34,6 +36,7 @@ public class Song {
     private Song(UUID id, String spotifyTrackId, String title, String artist, String albumName,
                  String albumImageUrl, int durationMs, LocalDateTime registeredAt) {
         this.id = id;
+        this.persisted = true;
         this.spotifyTrackId = spotifyTrackId;
         this.title = title;
         this.artist = artist;

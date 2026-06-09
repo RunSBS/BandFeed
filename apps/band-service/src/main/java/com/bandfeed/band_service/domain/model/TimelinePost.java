@@ -11,6 +11,7 @@ import java.util.UUID;
 public class TimelinePost {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID bandId;
     private final UUID authorId;
     private String title;
@@ -20,7 +21,8 @@ public class TimelinePost {
 
     @Builder(access = AccessLevel.PRIVATE)
     private TimelinePost(UUID bandId, UUID authorId, String title, String content) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.bandId = bandId;
         this.authorId = authorId;
         this.title = title;
@@ -31,6 +33,7 @@ public class TimelinePost {
 
     private TimelinePost(UUID id, UUID bandId, UUID authorId, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.persisted = true;
         this.bandId = bandId;
         this.authorId = authorId;
         this.title = title;

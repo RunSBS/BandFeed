@@ -11,13 +11,15 @@ import java.util.UUID;
 public class Follow {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID followerId;
     private final UUID followeeId;
     private LocalDateTime followedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
     private Follow(UUID followerId, UUID followeeId) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.followerId = followerId;
         this.followeeId = followeeId;
         this.followedAt = null;
@@ -25,6 +27,7 @@ public class Follow {
 
     private Follow(UUID id, UUID followerId, UUID followeeId, LocalDateTime followedAt) {
         this.id = id;
+        this.persisted = true;
         this.followerId = followerId;
         this.followeeId = followeeId;
         this.followedAt = followedAt;

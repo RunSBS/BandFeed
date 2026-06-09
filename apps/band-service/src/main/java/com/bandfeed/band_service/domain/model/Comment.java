@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Comment {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID postId;
     private final UUID authorId;
     private String content;
@@ -18,7 +19,8 @@ public class Comment {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Comment(UUID postId, UUID authorId, String content) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.postId = postId;
         this.authorId = authorId;
         this.content = content;
@@ -27,6 +29,7 @@ public class Comment {
 
     private Comment(UUID id, UUID postId, UUID authorId, String content, LocalDateTime createdAt) {
         this.id = id;
+        this.persisted = true;
         this.postId = postId;
         this.authorId = authorId;
         this.content = content;

@@ -10,6 +10,7 @@ import java.util.UUID;
 public class InstrumentConfig {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID songId;
     private String instrumentType;
     private String difficulty;
@@ -18,7 +19,8 @@ public class InstrumentConfig {
 
     @Builder(access = AccessLevel.PRIVATE)
     private InstrumentConfig(UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.songId = songId;
         this.instrumentType = instrumentType;
         this.difficulty = difficulty;
@@ -28,6 +30,7 @@ public class InstrumentConfig {
 
     private InstrumentConfig(UUID id, UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
         this.id = id;
+        this.persisted = true;
         this.songId = songId;
         this.instrumentType = instrumentType;
         this.difficulty = difficulty;

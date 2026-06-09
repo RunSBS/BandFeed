@@ -6,18 +6,20 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "instrument_configs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class InstrumentConfigEntity extends BaseEntity {
+public class InstrumentConfigEntity extends BaseEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean isNew;
 
     @Id
-    @UuidGenerator
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false, columnDefinition = "BINARY(16)")
@@ -37,8 +39,9 @@ public class InstrumentConfigEntity extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private InstrumentConfigEntity(UUID id, UUID songId, String instrumentType,
-                                   String difficulty, String notes, UUID registeredBy) {
+                                   String difficulty, String notes, UUID registeredBy, boolean isNew) {
         this.id = id;
+        this.isNew = isNew;
         this.songId = songId;
         this.instrumentType = instrumentType;
         this.difficulty = difficulty;
@@ -49,6 +52,7 @@ public class InstrumentConfigEntity extends BaseEntity {
     public static InstrumentConfigEntity from(InstrumentConfig domain) {
         return InstrumentConfigEntity.builder()
                 .id(domain.getId())
+                .isNew(!domain.isPersisted())
                 .songId(domain.getSongId())
                 .instrumentType(domain.getInstrumentType())
                 .difficulty(domain.getDifficulty())
@@ -56,6 +60,16 @@ public class InstrumentConfigEntity extends BaseEntity {
                 .registeredBy(domain.getRegisteredBy())
                 .build();
     }
+
+    @Override
+    public UUID getId() { return id; }
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PostPersist
+    void markNotNew() { this.isNew = false; }
 
     public InstrumentConfig toDomain() {
         return InstrumentConfig.reconstitute(id, songId, instrumentType, difficulty, notes, registeredBy);

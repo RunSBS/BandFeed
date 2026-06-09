@@ -6,18 +6,20 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "songs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SongEntity extends BaseEntity {
+public class SongEntity extends BaseEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean isNew;
 
     @Id
-    @UuidGenerator
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;
 
     @Column(nullable = false, unique = true)
@@ -38,8 +40,9 @@ public class SongEntity extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private SongEntity(UUID id, String spotifyTrackId, String title, String artist,
-                       String albumName, String albumImageUrl, int durationMs) {
+                       String albumName, String albumImageUrl, int durationMs, boolean isNew) {
         this.id = id;
+        this.isNew = isNew;
         this.spotifyTrackId = spotifyTrackId;
         this.title = title;
         this.artist = artist;
@@ -51,6 +54,7 @@ public class SongEntity extends BaseEntity {
     public static SongEntity from(Song domain) {
         return SongEntity.builder()
                 .id(domain.getId())
+                .isNew(!domain.isPersisted())
                 .spotifyTrackId(domain.getSpotifyTrackId())
                 .title(domain.getTitle())
                 .artist(domain.getArtist())
@@ -59,6 +63,16 @@ public class SongEntity extends BaseEntity {
                 .durationMs(domain.getDurationMs())
                 .build();
     }
+
+    @Override
+    public UUID getId() { return id; }
+
+    @Override
+    public boolean isNew() { return isNew; }
+
+    @PostLoad
+    @PostPersist
+    void markNotNew() { this.isNew = false; }
 
     public Song toDomain() {
         return Song.reconstitute(id, spotifyTrackId, title, artist, albumName, albumImageUrl, durationMs, getCreatedAt());

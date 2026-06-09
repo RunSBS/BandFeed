@@ -11,6 +11,7 @@ import java.util.UUID;
 public class ChatRoomMember {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID chatRoomId;
     private final UUID userId;
     private LocalDateTime joinedAt;
@@ -18,7 +19,8 @@ public class ChatRoomMember {
 
     @Builder(access = AccessLevel.PRIVATE)
     private ChatRoomMember(UUID chatRoomId, UUID userId) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.chatRoomId = chatRoomId;
         this.userId = userId;
         this.joinedAt = null;
@@ -27,6 +29,7 @@ public class ChatRoomMember {
 
     private ChatRoomMember(UUID id, UUID chatRoomId, UUID userId, LocalDateTime joinedAt, UUID lastReadMessageId) {
         this.id = id;
+        this.persisted = true;
         this.chatRoomId = chatRoomId;
         this.userId = userId;
         this.joinedAt = joinedAt;

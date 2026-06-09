@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Band {
 
     private final UUID id;
+    private final boolean persisted;
     private String name;
     private String description;
     private UUID leaderId;
@@ -18,7 +19,8 @@ public class Band {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Band(String name, String description, UUID leaderId) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.name = name;
         this.description = description;
         this.leaderId = leaderId;
@@ -27,6 +29,7 @@ public class Band {
 
     private Band(UUID id, String name, String description, UUID leaderId, LocalDateTime createdAt) {
         this.id = id;
+        this.persisted = true;
         this.name = name;
         this.description = description;
         this.leaderId = leaderId;

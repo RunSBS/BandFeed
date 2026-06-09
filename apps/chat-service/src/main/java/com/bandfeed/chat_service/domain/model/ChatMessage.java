@@ -11,6 +11,7 @@ import java.util.UUID;
 public class ChatMessage {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID chatRoomId;
     private final UUID senderId;
     private String content;
@@ -18,7 +19,8 @@ public class ChatMessage {
 
     @Builder(access = AccessLevel.PRIVATE)
     private ChatMessage(UUID chatRoomId, UUID senderId, String content) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.chatRoomId = chatRoomId;
         this.senderId = senderId;
         this.content = content;
@@ -27,6 +29,7 @@ public class ChatMessage {
 
     private ChatMessage(UUID id, UUID chatRoomId, UUID senderId, String content, LocalDateTime sentAt) {
         this.id = id;
+        this.persisted = true;
         this.chatRoomId = chatRoomId;
         this.senderId = senderId;
         this.content = content;

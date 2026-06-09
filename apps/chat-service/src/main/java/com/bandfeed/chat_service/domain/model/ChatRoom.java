@@ -11,13 +11,15 @@ import java.util.UUID;
 public class ChatRoom {
 
     private final UUID id;
+    private final boolean persisted;
     private final UUID participant1Id;  // 두 참여자 중 compareTo가 작은 쪽
     private final UUID participant2Id;  // 두 참여자 중 compareTo가 큰 쪽
     private LocalDateTime createdAt;
 
     @Builder(access = AccessLevel.PRIVATE)
     private ChatRoom(UUID participant1Id, UUID participant2Id) {
-        this.id = null;
+        this.id = UUID.randomUUID();
+        this.persisted = false;
         this.participant1Id = participant1Id;
         this.participant2Id = participant2Id;
         this.createdAt = null;
@@ -25,6 +27,7 @@ public class ChatRoom {
 
     private ChatRoom(UUID id, UUID participant1Id, UUID participant2Id, LocalDateTime createdAt) {
         this.id = id;
+        this.persisted = true;
         this.participant1Id = participant1Id;
         this.participant2Id = participant2Id;
         this.createdAt = createdAt;
