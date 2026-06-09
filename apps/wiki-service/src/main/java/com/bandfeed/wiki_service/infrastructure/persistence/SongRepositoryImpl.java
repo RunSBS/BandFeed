@@ -12,25 +12,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SongRepositoryImpl implements SongRepository {
 
-    private final JpaSongRepository jpaSongRepository;
+    private final SongJpaRepository jpa;
 
     @Override
     public Optional<Song> findById(Long id) {
-        return jpaSongRepository.findById(id).map(SongEntity::toDomain);
+        return jpa.findById(id).map(SongEntity::toDomain);
     }
 
     @Override
     public Optional<Song> findBySpotifyTrackId(String spotifyTrackId) {
-        return jpaSongRepository.findBySpotifyTrackId(spotifyTrackId).map(SongEntity::toDomain);
+        return jpa.findBySpotifyTrackId(spotifyTrackId).map(SongEntity::toDomain);
     }
 
     @Override
     public Song save(Song song) {
-        return jpaSongRepository.save(SongEntity.from(song)).toDomain();
+        return jpa.save(SongEntity.from(song)).toDomain();
     }
 
     @Override
     public void delete(Song song) {
-        jpaSongRepository.deleteById(song.getId());
+        jpa.deleteById(song.getId());
     }
 }

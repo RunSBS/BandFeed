@@ -13,25 +13,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepository {
 
-    private final JpaPostRepository jpaPostRepository;
+    private final PostJpaRepository jpa;
 
     @Override
     public Optional<Post> findById(Long id) {
-        return jpaPostRepository.findById(id).map(PostEntity::toDomain);
+        return jpa.findById(id).map(PostEntity::toDomain);
     }
 
     @Override
     public List<Post> findAllBySongId(Long songId) {
-        return jpaPostRepository.findAllBySongId(songId).stream().map(PostEntity::toDomain).toList();
+        return jpa.findAllBySongId(songId).stream().map(PostEntity::toDomain).toList();
     }
 
     @Override
     public Post save(Post post) {
-        return jpaPostRepository.save(PostEntity.from(post)).toDomain();
+        return jpa.save(PostEntity.from(post)).toDomain();
     }
 
     @Override
     public void delete(Post post) {
-        jpaPostRepository.deleteById(post.getId());
+        jpa.deleteById(post.getId());
     }
 }
