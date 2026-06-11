@@ -1,10 +1,10 @@
 package com.bandfeed.chat_service.domain.exception;
 
-import java.util.UUID;
+import common.exception.BusinessException;
 
-public class NotChatParticipantException extends RuntimeException {
+public class NotChatParticipantException extends BusinessException {
 
-    public NotChatParticipantException(UUID userId, UUID chatRoomId) {
-        super("User " + userId + " is not a participant of chatRoom " + chatRoomId);
+    public NotChatParticipantException() {
+        super(ChatErrorCode.NOT_CHAT_PARTICIPANT);
     }
 }

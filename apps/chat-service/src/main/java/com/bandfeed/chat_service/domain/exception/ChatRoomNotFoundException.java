@@ -1,10 +1,10 @@
 package com.bandfeed.chat_service.domain.exception;
 
-import java.util.UUID;
+import common.exception.BusinessException;
 
-public class ChatRoomNotFoundException extends RuntimeException {
+public class ChatRoomNotFoundException extends BusinessException {
 
-    public ChatRoomNotFoundException(UUID chatRoomId) {
-        super("ChatRoom not found: " + chatRoomId);
+    public ChatRoomNotFoundException() {
+        super(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
     }
 }

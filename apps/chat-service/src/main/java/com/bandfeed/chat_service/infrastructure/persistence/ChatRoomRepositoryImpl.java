@@ -4,8 +4,10 @@ import com.bandfeed.chat_service.domain.model.ChatRoom;
 import com.bandfeed.chat_service.domain.repository.ChatRoomRepository;
 import com.bandfeed.chat_service.infrastructure.entity.ChatRoomEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +27,12 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
         UUID p1 = userAId.compareTo(userBId) < 0 ? userAId : userBId;
         UUID p2 = userAId.compareTo(userBId) < 0 ? userBId : userAId;
         return jpa.findByParticipant1IdAndParticipant2Id(p1, p2).map(ChatRoomEntity::toDomain);
+    }
+
+    @Override
+    public List<ChatRoom> findAllByParticipant(UUID userId) {
+        return jpa.findAllByParticipant1IdOrParticipant2Id(userId, userId, Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream().map(ChatRoomEntity::toDomain).toList();
     }
 
     @Override

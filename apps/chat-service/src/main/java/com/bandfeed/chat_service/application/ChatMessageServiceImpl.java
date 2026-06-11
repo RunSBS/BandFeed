@@ -1,6 +1,9 @@
 package com.bandfeed.chat_service.application;
 
+import com.bandfeed.chat_service.domain.exception.NotChatParticipantException;
 import com.bandfeed.chat_service.domain.model.ChatMessage;
+import com.bandfeed.chat_service.domain.model.ChatRoom;
+import com.bandfeed.chat_service.domain.model.ChatRoomMember;
 import com.bandfeed.chat_service.domain.repository.ChatMessageRepository;
 import com.bandfeed.chat_service.domain.repository.ChatRoomMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,23 +26,25 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     @Override
     public ChatMessage sendMessage(UUID chatRoomId, UUID senderId, String content) {
-        chatRoomService.findRoom(chatRoomId);
+        ChatRoom room = chatRoomService.findRoom(chatRoomId);
+        chatRoomService.validateParticipant(room, senderId);
         ChatMessage message = ChatMessage.create(chatRoomId, senderId, content);
         return chatMessageRepository.save(message);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ChatMessage> findMessages(UUID chatRoomId, int size) {
+    public List<ChatMessage> findMessages(UUID chatRoomId, UUID userId, int size) {
+        ChatRoom room = chatRoomService.findRoom(chatRoomId);
+        chatRoomService.validateParticipant(room, userId);
         return chatMessageRepository.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, size);
     }
 
     @Override
     public void readMessage(UUID chatRoomId, UUID userId, UUID messageId) {
-        chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
-                .ifPresent(member -> {
-                    member.readMessage(messageId);
-                    chatRoomMemberRepository.save(member);
-                });
+        ChatRoomMember member = chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
+                .orElseThrow(NotChatParticipantException::new);
+        member.readMessage(messageId);
+        chatRoomMemberRepository.save(member);
     }
 }

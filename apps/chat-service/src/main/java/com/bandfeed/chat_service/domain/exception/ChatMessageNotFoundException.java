@@ -1,10 +1,10 @@
 package com.bandfeed.chat_service.domain.exception;
 
-import java.util.UUID;
+import common.exception.BusinessException;
 
-public class ChatMessageNotFoundException extends RuntimeException {
+public class ChatMessageNotFoundException extends BusinessException {
 
-    public ChatMessageNotFoundException(UUID messageId) {
-        super("ChatMessage not found: " + messageId);
+    public ChatMessageNotFoundException() {
+        super(ChatErrorCode.CHAT_MESSAGE_NOT_FOUND);
     }
 }

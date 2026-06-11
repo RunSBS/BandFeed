@@ -2,7 +2,7 @@ package com.bandfeed.chat_service.presentation.dto.request;
 
 import java.util.UUID;
 
-public record ReadMessageRequestDto(
+public record CreateChatMessageRequestDto(
         UUID chatRoomId,
-        UUID lastReadMessageId
+        String content
 ) {}
