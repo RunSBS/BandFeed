@@ -1,9 +1,11 @@
 package com.bandfeed.band_service.domain.exception;
 
+import common.exception.BusinessException;
+
 import java.util.UUID;
 
-public class AlreadyBandMemberException extends RuntimeException {
+public class AlreadyBandMemberException extends BusinessException {
     public AlreadyBandMemberException(UUID userId, UUID bandId) {
-        super("User " + userId + " is already a member of band " + bandId);
+        super(BandErrorCode.ALREADY_BAND_MEMBER);
     }
 }

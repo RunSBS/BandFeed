@@ -32,6 +32,11 @@ public class BandMemberRepositoryImpl implements BandMemberRepository {
     }
 
     @Override
+    public List<BandMember> findAllByUserId(UUID userId) {
+        return jpa.findAllByUserId(userId).stream().map(BandMemberEntity::toDomain).toList();
+    }
+
+    @Override
     public void delete(BandMember member) {
         jpa.deleteById(member.getId());
     }

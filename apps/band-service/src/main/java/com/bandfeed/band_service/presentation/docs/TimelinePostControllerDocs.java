@@ -26,6 +26,12 @@ public interface TimelinePostControllerDocs {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size);
 
+    @GetMapping("/feed")
+    ResponseEntity<?> findFeed(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size);
+
     @PatchMapping("/{postId}")
     ResponseEntity<?> updateTimelinePostInfo(
             @PathVariable UUID postId,
@@ -44,6 +50,9 @@ public interface TimelinePostControllerDocs {
             @PathVariable UUID postId,
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody CreateCommentRequestDto request);
+
+    @GetMapping("/{postId}/comments")
+    ResponseEntity<?> findAllTimelinePostComment(@PathVariable UUID postId);
 
     @DeleteMapping("/{postId}/comments/{commentId}")
     ResponseEntity<?> deleteTimelinePostComment(

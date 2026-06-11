@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface BandMemberJpaRepository extends JpaRepository<BandMemberEntity, UUID> {
     Optional<BandMemberEntity> findByBandIdAndUserId(UUID bandId, UUID userId);
     List<BandMemberEntity> findAllByBandId(UUID bandId);
+    List<BandMemberEntity> findAllByUserId(UUID userId);
 }

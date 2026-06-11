@@ -1,9 +1,11 @@
 package com.bandfeed.band_service.domain.exception;
 
+import common.exception.BusinessException;
+
 import java.util.UUID;
 
-public class NotBandMemberException extends RuntimeException {
+public class NotBandMemberException extends BusinessException {
     public NotBandMemberException(UUID userId, UUID bandId) {
-        super("User " + userId + " is not a member of band " + bandId);
+        super(BandErrorCode.NOT_BAND_MEMBER);
     }
 }

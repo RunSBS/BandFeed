@@ -10,6 +10,9 @@ import com.bandfeed.band_service.presentation.dto.request.UpdateTimelinePostRequ
 import com.bandfeed.band_service.presentation.dto.response.CommentResponseDto;
 import com.bandfeed.band_service.presentation.dto.response.TimelinePostResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +50,22 @@ public class TimelinePostController implements TimelinePostControllerDocs {
             @RequestParam UUID bandId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        List<TimelinePost> posts = timelinePostService.findAllTimelinePost(bandId);
-        return ResponseEntity.ok(posts.stream().map(TimelinePostResponseDto::from).toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TimelinePostResponseDto> posts = timelinePostService.findAllTimelinePost(bandId, pageable)
+                .map(TimelinePostResponseDto::from);
+        return ResponseEntity.ok(posts);
+    }
+
+    @Override
+    @GetMapping("/feed")
+    public ResponseEntity<?> findFeed(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TimelinePostResponseDto> posts = timelinePostService.findFeed(userId, pageable)
+                .map(TimelinePostResponseDto::from);
+        return ResponseEntity.ok(posts);
     }
 
     @Override
@@ -80,6 +97,15 @@ public class TimelinePostController implements TimelinePostControllerDocs {
             @RequestBody CreateCommentRequestDto request) {
         Comment comment = timelinePostService.createTimelinePostComment(postId, userId, request.content());
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponseDto.from(comment));
+    }
+
+    @Override
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<?> findAllTimelinePostComment(@PathVariable UUID postId) {
+        List<CommentResponseDto> comments = timelinePostService.findAllTimelinePostComment(postId).stream()
+                .map(CommentResponseDto::from)
+                .toList();
+        return ResponseEntity.ok(comments);
     }
 
     @Override
