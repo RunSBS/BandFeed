@@ -61,7 +61,7 @@ class BandControllerTest {
     @Test
     void findBandById_존재하지_않으면_에러() throws Exception {
         mockMvc.perform(get("/api/bands/{bandId}", UUID.randomUUID()))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -88,6 +88,109 @@ class BandControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("수정후"))
                 .andExpect(jsonPath("$.description").value("수정된 설명"));
+    }
+
+    @Test
+    void updateBandInfo_리더가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "수정전", "설명");
+
+        UpdateBandRequestDto request = new UpdateBandRequestDto("수정후", "수정된 설명");
+
+        mockMvc.perform(patch("/api/bands/{bandId}", created.id())
+                        .header("X-User-Id", otherUserId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void disbandBand_리더가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "해체될밴드", "설명");
+
+        mockMvc.perform(delete("/api/bands/{bandId}", created.id())
+                        .header("X-User-Id", otherUserId.toString()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void inviteBandMember_리더가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        UUID inviteeId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "멤버초대밴드", "설명");
+
+        InviteMemberRequestDto request = new InviteMemberRequestDto(inviteeId);
+
+        mockMvc.perform(post("/api/bands/{bandId}/members", created.id())
+                        .header("X-User-Id", otherUserId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void inviteBandMember_이미_멤버면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID inviteeId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "중복초대밴드", "설명");
+        inviteMember(created.id(), leaderId, inviteeId);
+
+        InviteMemberRequestDto request = new InviteMemberRequestDto(inviteeId);
+
+        mockMvc.perform(post("/api/bands/{bandId}/members", created.id())
+                        .header("X-User-Id", leaderId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void removeBandMember_리더가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        UUID inviteeId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "멤버제거밴드", "설명");
+        inviteMember(created.id(), leaderId, inviteeId);
+
+        mockMvc.perform(delete("/api/bands/{bandId}/members/{userId}", created.id(), inviteeId)
+                        .header("X-User-Id", otherUserId.toString()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void transferBandLeader_리더가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        UUID newLeaderId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "리더위임밴드", "설명");
+        inviteMember(created.id(), leaderId, newLeaderId);
+
+        TransferLeaderRequestDto request = new TransferLeaderRequestDto(newLeaderId);
+
+        mockMvc.perform(patch("/api/bands/{bandId}/leader", created.id())
+                        .header("X-User-Id", otherUserId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void transferBandLeader_새리더가_멤버가_아니면_에러() throws Exception {
+        UUID leaderId = UUID.randomUUID();
+        UUID notMemberId = UUID.randomUUID();
+        BandResponseDto created = createBand(leaderId, "리더위임밴드", "설명");
+
+        TransferLeaderRequestDto request = new TransferLeaderRequestDto(notMemberId);
+
+        mockMvc.perform(patch("/api/bands/{bandId}/leader", created.id())
+                        .header("X-User-Id", leaderId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -1,6 +1,10 @@
 package com.bandfeed.band_service.application;
 
 import com.bandfeed.band_service.application.dto.command.CreateBandCommand;
+import com.bandfeed.band_service.domain.exception.AlreadyBandMemberException;
+import com.bandfeed.band_service.domain.exception.BandNotFoundException;
+import com.bandfeed.band_service.domain.exception.NotBandLeaderException;
+import com.bandfeed.band_service.domain.exception.NotBandMemberException;
 import com.bandfeed.band_service.domain.model.Band;
 import com.bandfeed.band_service.domain.model.BandMember;
 import com.bandfeed.band_service.domain.model.BandRole;
@@ -39,7 +43,7 @@ public class BandServiceImpl implements BandService {
     @Transactional(readOnly = true)
     public Band findBandById(UUID bandId) {
         return bandRepository.findById(bandId)
-                .orElseThrow(() -> new RuntimeException("Band not found: " + bandId));
+                .orElseThrow(() -> new BandNotFoundException(bandId));
     }
 
     @Override
@@ -51,6 +55,7 @@ public class BandServiceImpl implements BandService {
     @Override
     public Band updateBandInfo(UUID bandId, String name, String description, UUID requesterId) {
         Band band = findBandById(bandId);
+        validateLeader(band, requesterId);
         band.updateInfo(name, description);
         return bandRepository.save(band);
     }
@@ -58,6 +63,7 @@ public class BandServiceImpl implements BandService {
     @Override
     public void deleteBand(UUID bandId, UUID requesterId) {
         Band band = findBandById(bandId);
+        validateLeader(band, requesterId);
         // TODO: 밴드 해체 시 wiki-service, chat-service의 연관 데이터 정리 필요
         // 추후 BandDisbandedEvent를 Kafka로 publish하여 이벤트 기반으로 처리 예정
         bandRepository.delete(band);
@@ -67,6 +73,13 @@ public class BandServiceImpl implements BandService {
 
     @Override
     public BandMember inviteBandMember(UUID bandId, UUID userId, UUID requesterId) {
+        Band band = findBandById(bandId);
+        validateLeader(band, requesterId);
+
+        bandMemberRepository.findByBandIdAndUserId(bandId, userId).ifPresent(m -> {
+            throw new AlreadyBandMemberException(userId, bandId);
+        });
+
         BandMember member = BandMember.create(bandId, userId, BandRole.MEMBER);
         return bandMemberRepository.save(member);
     }
@@ -79,8 +92,11 @@ public class BandServiceImpl implements BandService {
 
     @Override
     public void removeBandMember(UUID bandId, UUID userId, UUID requesterId) {
+        Band band = findBandById(bandId);
+        validateLeader(band, requesterId);
+
         BandMember member = bandMemberRepository.findByBandIdAndUserId(bandId, userId)
-                .orElseThrow(() -> new RuntimeException("BandMember not found"));
+                .orElseThrow(() -> new NotBandMemberException(userId, bandId));
         bandMemberRepository.delete(member);
     }
 
@@ -89,18 +105,25 @@ public class BandServiceImpl implements BandService {
     @Override
     public Band transferBandLeader(UUID bandId, UUID newLeaderId, UUID requesterId) {
         Band band = findBandById(bandId);
+        validateLeader(band, requesterId);
 
         BandMember currentLeader = bandMemberRepository.findByBandIdAndUserId(bandId, requesterId)
-                .orElseThrow(() -> new RuntimeException("BandMember not found: " + requesterId));
+                .orElseThrow(() -> new NotBandMemberException(requesterId, bandId));
         currentLeader.demoteToMember();
         bandMemberRepository.save(currentLeader);
 
         BandMember newLeader = bandMemberRepository.findByBandIdAndUserId(bandId, newLeaderId)
-                .orElseThrow(() -> new RuntimeException("BandMember not found: " + newLeaderId));
+                .orElseThrow(() -> new NotBandMemberException(newLeaderId, bandId));
         newLeader.promoteToLeader();
         bandMemberRepository.save(newLeader);
 
         band.transferLeader(newLeaderId);
         return bandRepository.save(band);
+    }
+
+    private void validateLeader(Band band, UUID requesterId) {
+        if (!band.getLeaderId().equals(requesterId)) {
+            throw new NotBandLeaderException(requesterId);
+        }
     }
 }

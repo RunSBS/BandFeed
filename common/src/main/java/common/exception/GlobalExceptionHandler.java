@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
                 .orElse(CommonErrorCode.INVALID_INPUT.getMessage());
         log.warn("ValidationException: {}", message);
         return CommonResponse.error(CommonErrorCode.INVALID_INPUT, message);
+    }
+
+    // 필수 헤더(X-User-Id 등) 누락 처리
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<CommonResponse<?>> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+        log.warn("MissingRequestHeaderException: {}", e.getMessage());
+        return CommonResponse.error(CommonErrorCode.INVALID_INPUT, e.getHeaderName() + " 헤더가 필요합니다.");
     }
 
     // 그 외 예상치 못한 예외
