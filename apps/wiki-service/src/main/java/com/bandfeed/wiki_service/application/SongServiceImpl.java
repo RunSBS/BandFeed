@@ -6,6 +6,7 @@ import com.bandfeed.wiki_service.domain.model.Song;
 import com.bandfeed.wiki_service.domain.exception.DuplicateSongException;
 import com.bandfeed.wiki_service.domain.exception.InstrumentConfigNotFoundException;
 import com.bandfeed.wiki_service.domain.exception.SongNotFoundException;
+import com.bandfeed.wiki_service.domain.exception.SpotifyApiException;
 import com.bandfeed.wiki_service.domain.repository.InstrumentConfigRepository;
 import com.bandfeed.wiki_service.domain.repository.SongRepository;
 import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyClient;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 import java.util.UUID;
@@ -72,7 +74,13 @@ public class SongServiceImpl implements SongService {
         songRepository.findBySpotifyTrackId(spotifyTrackId).ifPresent(s -> {
             throw new DuplicateSongException(spotifyTrackId);
         });
-        SpotifyTrackResponse track = spotifyClient.getTrack(spotifyTrackId);
+        SpotifyTrackResponse track;
+        try {
+            track = spotifyClient.getTrack(spotifyTrackId);
+        } catch (RestClientException e) {
+            log.error("Spotify getTrack 호출 실패: spotifyTrackId={}", spotifyTrackId, e);
+            throw new SpotifyApiException();
+        }
         Song song = Song.create(track.getId(), track.getName(), track.getArtistName(),
                 track.getAlbumName(), track.getAlbumImageUrl(), track.getDurationMs());
         return songRepository.save(song);
