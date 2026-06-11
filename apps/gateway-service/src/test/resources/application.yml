@@ -10,3 +10,6 @@ spring:
 eureka:
   client:
     enabled: false
+
+jwt:
+  secret: test-secret-key-for-testing-purposes-must-be-at-least-256-bits-long

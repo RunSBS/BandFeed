@@ -3,6 +3,25 @@ spring:
     name: gateway-service
   config:
     import: optional:configserver:http://localhost:8888
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**, /api/follows/**
+        - id: band-service
+          uri: lb://band-service
+          predicates:
+            - Path=/api/bands/**, /api/timeline-posts/**
+        - id: wiki-service
+          uri: lb://wiki-service
+          predicates:
+            - Path=/api/songs/**, /api/wiki-posts/**
+        - id: chat-service
+          uri: lb://chat-service
+          predicates:
+            - Path=/api/chat-rooms/**, /api/chat-messages/**
 
 server:
   port: 8000
@@ -12,4 +31,5 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
-
+jwt:
+  secret: ${JWT_SECRET}

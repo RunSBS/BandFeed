@@ -176,7 +176,7 @@ services:
       dockerfile: apps/user-service/Dockerfile
     container_name: bandfeed-user
     ports:
-      - "${USER_SERVER_PORT}:9010"
+      - "${USER_SERVER_PORT}:9000"
     environment:
       <<: *java-tz
       SERVER_PORT: 9000
