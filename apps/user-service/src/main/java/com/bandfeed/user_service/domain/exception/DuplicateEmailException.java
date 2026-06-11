@@ -1,7 +1,9 @@
 package com.bandfeed.user_service.domain.exception;
 
-public class DuplicateEmailException extends RuntimeException {
+import common.exception.BusinessException;
+
+public class DuplicateEmailException extends BusinessException {
     public DuplicateEmailException(String email) {
-        super("Duplicate email: " + email);
+        super(UserErrorCode.DUPLICATE_EMAIL);
     }
 }

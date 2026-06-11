@@ -1,7 +1,9 @@
 package com.bandfeed.user_service.domain.exception;
 
-public class InvalidPasswordException extends RuntimeException {
+import common.exception.BusinessException;
+
+public class InvalidPasswordException extends BusinessException {
     public InvalidPasswordException() {
-        super("Invalid password");
+        super(UserErrorCode.INVALID_PASSWORD);
     }
 }

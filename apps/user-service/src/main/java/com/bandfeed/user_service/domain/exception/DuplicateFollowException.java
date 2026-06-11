@@ -1,9 +1,11 @@
 package com.bandfeed.user_service.domain.exception;
 
+import common.exception.BusinessException;
+
 import java.util.UUID;
 
-public class DuplicateFollowException extends RuntimeException {
+public class DuplicateFollowException extends BusinessException {
     public DuplicateFollowException(UUID followerId, UUID followeeId) {
-        super("Duplicate follow: followerId=" + followerId + ", followeeId=" + followeeId);
+        super(UserErrorCode.DUPLICATE_FOLLOW);
     }
 }

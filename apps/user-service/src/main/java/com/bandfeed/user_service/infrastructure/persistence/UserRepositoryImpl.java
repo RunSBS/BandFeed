@@ -27,12 +27,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        return jpa.save(UserEntity.from(user)).toDomain();
+        return jpa.saveAndFlush(UserEntity.from(user)).toDomain();
     }
 
     @Override
     public void delete(User user) {
         jpa.deleteById(user.getId());
+        jpa.flush();
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.bandfeed.user_service.application;
 
+import com.bandfeed.user_service.domain.exception.DuplicateFollowException;
+import com.bandfeed.user_service.domain.exception.FollowNotFoundException;
+import com.bandfeed.user_service.domain.exception.SelfFollowException;
 import com.bandfeed.user_service.domain.model.Follow;
 import com.bandfeed.user_service.domain.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +23,11 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public Follow follow(UUID followerId, UUID followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new SelfFollowException();
+        }
         if (followRepository.existsByFollowerIdAndFolloweeId(followerId, followeeId)) {
-            throw new RuntimeException("Already following");
+            throw new DuplicateFollowException(followerId, followeeId);
         }
         Follow follow = Follow.create(followerId, followeeId);
         return followRepository.save(follow);
@@ -30,7 +36,7 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public void unfollow(UUID followerId, UUID followeeId) {
         Follow follow = followRepository.findByFollowerIdAndFolloweeId(followerId, followeeId)
-                .orElseThrow(() -> new RuntimeException("Follow not found"));
+                .orElseThrow(FollowNotFoundException::new);
         followRepository.delete(follow);
     }
 
