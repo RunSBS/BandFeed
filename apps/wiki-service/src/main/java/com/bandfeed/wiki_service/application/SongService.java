@@ -11,8 +11,7 @@ public interface SongService {
 
     List<SpotifyTrackResult> searchSpotify(String query);
 
-    Song registerSong(String spotifyTrackId, String title, String artist,
-                      String albumName, String albumImageUrl, int durationMs);
+    Song registerSong(String spotifyTrackId);
     Song findSong(UUID songId);
 
     InstrumentConfig addInstrumentConfig(UUID songId, String instrumentType,

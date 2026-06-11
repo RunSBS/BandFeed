@@ -1,6 +1,7 @@
 package com.bandfeed.wiki_service.application;
 
 import com.bandfeed.wiki_service.application.dto.command.CreatePostCommand;
+import com.bandfeed.wiki_service.domain.exception.PostNotFoundException;
 import com.bandfeed.wiki_service.domain.model.Post;
 import com.bandfeed.wiki_service.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public Post findPost(UUID postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found: " + postId));
+                .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     @Override

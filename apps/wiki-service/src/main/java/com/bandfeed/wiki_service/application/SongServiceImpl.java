@@ -3,8 +3,14 @@ package com.bandfeed.wiki_service.application;
 import com.bandfeed.wiki_service.application.dto.SpotifyTrackResult;
 import com.bandfeed.wiki_service.domain.model.InstrumentConfig;
 import com.bandfeed.wiki_service.domain.model.Song;
+import com.bandfeed.wiki_service.domain.exception.DuplicateSongException;
+import com.bandfeed.wiki_service.domain.exception.InstrumentConfigNotFoundException;
+import com.bandfeed.wiki_service.domain.exception.SongNotFoundException;
 import com.bandfeed.wiki_service.domain.repository.InstrumentConfigRepository;
 import com.bandfeed.wiki_service.domain.repository.SongRepository;
+import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyClient;
+import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyTrackItem;
+import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyTrackResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,22 +25,56 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SongServiceImpl implements SongService {
 
+    private static final int SEARCH_LIMIT = 10;
+    private static final int SEARCH_OFFSET = 0;
+
     private final SongRepository songRepository;
     private final InstrumentConfigRepository instrumentConfigRepository;
+    private final SpotifyClient spotifyClient;
 
     @Override
-    @Transactional(readOnly = true)
     public List<SpotifyTrackResult> searchSpotify(String query) {
-        throw new UnsupportedOperationException("SpotifyClient 구현 후 작성");
+        List<Song> cached = songRepository.findAllByTitleContaining(query);
+        if (!cached.isEmpty()) {
+            return cached.stream().map(this::toResult).toList();
+        }
+
+        return spotifyClient.searchTracks(query, SEARCH_LIMIT, SEARCH_OFFSET).getItems().stream()
+                .map(this::saveIfAbsent)
+                .map(this::toResult)
+                .toList();
+    }
+
+    private Song saveIfAbsent(SpotifyTrackItem item) {
+        return songRepository.findBySpotifyTrackId(item.getId())
+                .orElseGet(() -> songRepository.save(Song.create(
+                        item.getId(),
+                        item.getName(),
+                        item.getArtistName(),
+                        item.getAlbumName(),
+                        item.getAlbumImageUrl(),
+                        item.getDurationMs())));
+    }
+
+    private SpotifyTrackResult toResult(Song song) {
+        return new SpotifyTrackResult(
+                song.getSpotifyTrackId(),
+                song.getTitle(),
+                song.getArtist(),
+                song.getAlbumName(),
+                song.getAlbumImageUrl(),
+                song.getDurationMs(),
+                null);
     }
 
     @Override
-    public Song registerSong(String spotifyTrackId, String title, String artist,
-                             String albumName, String albumImageUrl, int durationMs) {
+    public Song registerSong(String spotifyTrackId) {
         songRepository.findBySpotifyTrackId(spotifyTrackId).ifPresent(s -> {
-            throw new RuntimeException("Song already registered: " + spotifyTrackId);
+            throw new DuplicateSongException(spotifyTrackId);
         });
-        Song song = Song.create(spotifyTrackId, title, artist, albumName, albumImageUrl, durationMs);
+        SpotifyTrackResponse track = spotifyClient.getTrack(spotifyTrackId);
+        Song song = Song.create(track.getId(), track.getName(), track.getArtistName(),
+                track.getAlbumName(), track.getAlbumImageUrl(), track.getDurationMs());
         return songRepository.save(song);
     }
 
@@ -42,7 +82,7 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public Song findSong(UUID songId) {
         return songRepository.findById(songId)
-                .orElseThrow(() -> new RuntimeException("Song not found: " + songId));
+                .orElseThrow(() -> new SongNotFoundException(songId));
     }
 
     @Override
@@ -60,6 +100,8 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public void deleteInstrumentConfig(UUID configId) {
-        throw new UnsupportedOperationException("InstrumentConfigRepository.findById 추가 후 작성");
+        InstrumentConfig config = instrumentConfigRepository.findById(configId)
+                .orElseThrow(() -> new InstrumentConfigNotFoundException(configId));
+        instrumentConfigRepository.delete(config);
     }
 }

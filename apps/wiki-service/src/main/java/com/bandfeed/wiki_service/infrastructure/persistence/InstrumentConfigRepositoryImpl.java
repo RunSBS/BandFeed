@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,6 +15,11 @@ import java.util.UUID;
 public class InstrumentConfigRepositoryImpl implements InstrumentConfigRepository {
 
     private final InstrumentConfigJpaRepository jpa;
+
+    @Override
+    public Optional<InstrumentConfig> findById(UUID id) {
+        return jpa.findById(id).map(InstrumentConfigEntity::toDomain);
+    }
 
     @Override
     public List<InstrumentConfig> findAllBySongId(UUID songId) {

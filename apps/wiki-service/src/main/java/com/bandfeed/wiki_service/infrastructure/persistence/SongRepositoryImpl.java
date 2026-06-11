@@ -6,6 +6,7 @@ import com.bandfeed.wiki_service.infrastructure.entity.SongEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,11 @@ public class SongRepositoryImpl implements SongRepository {
     @Override
     public Optional<Song> findBySpotifyTrackId(String spotifyTrackId) {
         return jpa.findBySpotifyTrackId(spotifyTrackId).map(SongEntity::toDomain);
+    }
+
+    @Override
+    public List<Song> findAllByTitleContaining(String keyword) {
+        return jpa.findAllByTitleContainingIgnoreCase(keyword).stream().map(SongEntity::toDomain).toList();
     }
 
     @Override
