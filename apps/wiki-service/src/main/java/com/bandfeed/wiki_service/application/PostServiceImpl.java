@@ -1,15 +1,17 @@
 package com.bandfeed.wiki_service.application;
 
 import com.bandfeed.wiki_service.application.dto.command.CreatePostCommand;
+import com.bandfeed.wiki_service.domain.exception.NotPostAuthorException;
 import com.bandfeed.wiki_service.domain.exception.PostNotFoundException;
 import com.bandfeed.wiki_service.domain.model.Post;
 import com.bandfeed.wiki_service.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -35,13 +37,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Post> findPostsBySong(UUID songId) {
-        return postRepository.findAllBySongId(songId);
+    public Page<Post> findPostsBySong(UUID songId, Pageable pageable) {
+        return postRepository.findAllBySongId(songId, pageable);
     }
 
     @Override
     public Post updatePost(UUID postId, String title, String content, UUID requesterId) {
         Post post = findPost(postId);
+        if (!post.getAuthorId().equals(requesterId)) {
+            throw new NotPostAuthorException(requesterId);
+        }
         post.update(title, content);
         return postRepository.save(post);
     }
@@ -49,6 +54,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(UUID postId, UUID requesterId) {
         Post post = findPost(postId);
+        if (!post.getAuthorId().equals(requesterId)) {
+            throw new NotPostAuthorException(requesterId);
+        }
         postRepository.delete(post);
     }
 }

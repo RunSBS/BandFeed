@@ -98,7 +98,7 @@ class SongControllerTest {
         mockMvc.perform(post("/api/songs")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isConflict());
     }
 
     @Test

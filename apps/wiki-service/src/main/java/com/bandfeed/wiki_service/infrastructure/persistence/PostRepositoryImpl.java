@@ -4,9 +4,10 @@ import com.bandfeed.wiki_service.domain.model.Post;
 import com.bandfeed.wiki_service.domain.repository.PostRepository;
 import com.bandfeed.wiki_service.infrastructure.entity.PostEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,8 +23,8 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<Post> findAllBySongId(UUID songId) {
-        return jpa.findAllBySongId(songId).stream().map(PostEntity::toDomain).toList();
+    public Page<Post> findAllBySongId(UUID songId, Pageable pageable) {
+        return jpa.findAllBySongId(songId, pageable).map(PostEntity::toDomain);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.bandfeed.wiki_service.domain.exception;
 
+import common.exception.BusinessException;
+
 import java.util.UUID;
 
-public class PostNotFoundException extends RuntimeException {
+public class PostNotFoundException extends BusinessException {
 
     public PostNotFoundException(UUID postId) {
-        super("Post not found: " + postId);
+        super(WikiErrorCode.POST_NOT_FOUND);
     }
 }

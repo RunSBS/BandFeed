@@ -56,7 +56,37 @@ class PostControllerTest {
 
         mockMvc.perform(get("/api/wiki-posts").param("songId", songId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void findAllPostsBySong_최신순_정렬() throws Exception {
+        UUID songId = createSongId();
+        UUID authorId = UUID.randomUUID();
+        createPost(songId, authorId, "먼저쓴글", "내용1");
+        createPost(songId, authorId, "나중쓴글", "내용2");
+
+        mockMvc.perform(get("/api/wiki-posts")
+                        .param("songId", songId.toString())
+                        .param("sort", "latest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].title").value("나중쓴글"))
+                .andExpect(jsonPath("$.content[1].title").value("먼저쓴글"));
+    }
+
+    @Test
+    void findAllPostsBySong_오래된순_정렬() throws Exception {
+        UUID songId = createSongId();
+        UUID authorId = UUID.randomUUID();
+        createPost(songId, authorId, "먼저쓴글", "내용1");
+        createPost(songId, authorId, "나중쓴글", "내용2");
+
+        mockMvc.perform(get("/api/wiki-posts")
+                        .param("songId", songId.toString())
+                        .param("sort", "oldest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].title").value("먼저쓴글"))
+                .andExpect(jsonPath("$.content[1].title").value("나중쓴글"));
     }
 
     @Test
@@ -74,6 +104,34 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("수정제목"))
                 .andExpect(jsonPath("$.content").value("수정내용"));
+    }
+
+    @Test
+    void updatePost_작성자가_아니면_에러() throws Exception {
+        UUID songId = createSongId();
+        UUID authorId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        PostResponseDto created = createPost(songId, authorId, "원본제목", "원본내용");
+
+        UpdatePostRequestDto request = new UpdatePostRequestDto("수정제목", "수정내용");
+
+        mockMvc.perform(patch("/api/wiki-posts/{postId}", created.id())
+                        .header("X-User-Id", otherUserId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deletePost_작성자가_아니면_에러() throws Exception {
+        UUID songId = createSongId();
+        UUID authorId = UUID.randomUUID();
+        UUID otherUserId = UUID.randomUUID();
+        PostResponseDto created = createPost(songId, authorId, "삭제될글", "내용");
+
+        mockMvc.perform(delete("/api/wiki-posts/{postId}", created.id())
+                        .header("X-User-Id", otherUserId.toString()))
+                .andExpect(status().isForbidden());
     }
 
     @Test

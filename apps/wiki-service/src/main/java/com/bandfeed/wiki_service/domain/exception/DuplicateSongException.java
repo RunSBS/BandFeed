@@ -1,8 +1,10 @@
 package com.bandfeed.wiki_service.domain.exception;
 
-public class DuplicateSongException extends RuntimeException {
+import common.exception.BusinessException;
+
+public class DuplicateSongException extends BusinessException {
 
     public DuplicateSongException(String spotifyTrackId) {
-        super("Duplicate song with Spotify track ID: " + spotifyTrackId);
+        super(WikiErrorCode.DUPLICATE_SONG);
     }
 }

@@ -20,7 +20,11 @@ public interface PostControllerDocs {
     ResponseEntity<?> findPostById(@PathVariable UUID postId);
 
     @GetMapping
-    ResponseEntity<?> findAllPostsBySong(@RequestParam UUID songId);
+    ResponseEntity<?> findAllPostsBySong(
+            @RequestParam UUID songId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "latest") String sort);
 
     @PatchMapping("/{postId}")
     ResponseEntity<?> updatePost(

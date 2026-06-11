@@ -8,6 +8,9 @@ import com.bandfeed.wiki_service.presentation.dto.request.CreatePostRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.request.UpdatePostRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +43,14 @@ public class PostController implements PostControllerDocs {
 
     @Override
     @GetMapping
-    public ResponseEntity<?> findAllPostsBySong(@RequestParam UUID songId) {
-        return ResponseEntity.ok(postService.findPostsBySong(songId).stream().map(PostResponseDto::from).toList());
+    public ResponseEntity<?> findAllPostsBySong(
+            @RequestParam UUID songId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "latest") String sort) {
+        Sort.Direction direction = "oldest".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "createdAt"));
+        return ResponseEntity.ok(postService.findPostsBySong(songId, pageable).map(PostResponseDto::from));
     }
 
     @Override
