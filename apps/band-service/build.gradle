@@ -1,7 +1,17 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.flywaydb:flyway-mysql:11.7.2"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.14'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.flywaydb.flyway' version '11.7.2'
 }
 
 group = 'com.bandfeed'
@@ -54,4 +64,11 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+flyway {
+    url = project.findProperty('flywayUrl') ?: 'jdbc:mysql://localhost:3306/band_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true'
+    user = project.findProperty('flywayUser') ?: System.getenv('MYSQL_USER')
+    password = project.findProperty('flywayPassword') ?: System.getenv('MYSQL_PASSWORD')
+    locations = ['filesystem:src/main/resources/db/migration']
 }
