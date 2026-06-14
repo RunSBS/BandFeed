@@ -10,6 +10,8 @@ spring:
           uri: ${CONFIG_GIT_URI:https://github.com/RunSBS/BandFeed-config}
           default-label: ${CONFIG_GIT_BRANCH:main}
           search-paths: configs/{application}
+        health:
+          enabled: false
 
 server:
   port: 8888
