@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -49,6 +50,14 @@ public class UserController implements UserControllerDocs {
     @Override
     public ResponseEntity<?> findUserById(UUID userId) {
         return ResponseEntity.ok(UserResponseDto.from(userService.findById(userId)));
+    }
+
+    @Override
+    public ResponseEntity<?> searchUserByNickname(String nickname) {
+        List<UserResponseDto> users = userService.searchByNickname(nickname).stream()
+                .map(UserResponseDto::from)
+                .toList();
+        return ResponseEntity.ok(users);
     }
 
     @Override

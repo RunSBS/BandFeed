@@ -6,6 +6,7 @@ import com.bandfeed.user_service.infrastructure.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,5 +40,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return jpa.existsByEmail(email);
+    }
+
+    @Override
+    public List<User> findByNicknameContaining(String nickname) {
+        return jpa.findByNicknameContainingIgnoreCase(nickname).stream()
+                .map(UserEntity::toDomain)
+                .toList();
     }
 }

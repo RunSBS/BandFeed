@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -53,6 +54,12 @@ public class UserServiceImpl implements UserService {
     public User findById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> searchByNickname(String nickname) {
+        return userRepository.findByNicknameContaining(nickname);
     }
 
     @Override

@@ -23,6 +23,9 @@ public interface UserControllerDocs {
     @GetMapping("/{userId}")
     ResponseEntity<?> findUserById(@PathVariable UUID userId);
 
+    @GetMapping("/search")
+    ResponseEntity<?> searchUserByNickname(@RequestParam String nickname);
+
     @PatchMapping("/me")
     ResponseEntity<?> updateProfile(
             @RequestHeader("X-User-Id") UUID userId,
