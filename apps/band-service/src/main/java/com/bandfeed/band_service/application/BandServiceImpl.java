@@ -8,6 +8,7 @@ import com.bandfeed.band_service.domain.exception.NotBandLeaderException;
 import com.bandfeed.band_service.domain.exception.NotBandMemberException;
 import com.bandfeed.band_service.domain.model.Band;
 import com.bandfeed.band_service.domain.model.BandMember;
+import com.bandfeed.band_service.domain.model.BandMemberStatus;
 import com.bandfeed.band_service.domain.model.BandRole;
 import com.bandfeed.band_service.domain.repository.BandMemberRepository;
 import com.bandfeed.band_service.domain.repository.BandRepository;
@@ -88,6 +89,16 @@ public class BandServiceImpl implements BandService {
     @Transactional(readOnly = true)
     public List<BandMember> findAllBandMember(UUID bandId) {
         return bandMemberRepository.findAllActiveByBandId(bandId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Band> findMyBands(UUID userId) {
+        return bandMemberRepository.findAllByUserId(userId).stream()
+                .filter(m -> m.getStatus() == BandMemberStatus.ACTIVE)
+                .map(m -> bandRepository.findById(m.getBandId()).orElse(null))
+                .filter(b -> b != null)
+                .toList();
     }
 
     @Override

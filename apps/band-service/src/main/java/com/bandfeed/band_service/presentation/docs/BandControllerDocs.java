@@ -48,6 +48,9 @@ public interface BandControllerDocs {
     @GetMapping("/{bandId}/members")
     ResponseEntity<?> findAllBandMember(@PathVariable UUID bandId);
 
+    @GetMapping("/my")
+    ResponseEntity<?> findMyBands(@RequestHeader("X-User-Id") UUID userId);
+
     @GetMapping("/invitations/me")
     ResponseEntity<?> findMyPendingInvitations(@RequestHeader("X-User-Id") UUID userId);
 

@@ -21,6 +21,7 @@ public interface BandService {
     // ── BandMember CRUD ───────────────────────────────────────────────────────
     BandMember inviteBandMember(UUID bandId, UUID inviteeId, UUID requesterId);
     List<BandMember> findAllBandMember(UUID bandId);
+    List<Band> findMyBands(UUID userId);
     List<BandMember> findMyPendingInvitations(UUID userId);
     BandMember acceptInvitation(UUID bandId, UUID userId);
     void declineInvitation(UUID bandId, UUID userId);

@@ -91,6 +91,13 @@ public class BandController implements BandControllerDocs {
     }
 
     @Override
+    @GetMapping("/my")
+    public ResponseEntity<?> findMyBands(@RequestHeader("X-User-Id") UUID userId) {
+        List<Band> bands = bandService.findMyBands(userId);
+        return ResponseEntity.ok(bands.stream().map(BandResponseDto::from).toList());
+    }
+
+    @Override
     @GetMapping("/invitations/me")
     public ResponseEntity<?> findMyPendingInvitations(@RequestHeader("X-User-Id") UUID userId) {
         List<BandMember> invitations = bandService.findMyPendingInvitations(userId);
