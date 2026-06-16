@@ -11,16 +11,13 @@ import com.bandfeed.user_service.presentation.dto.request.SignupRequestDto;
 import com.bandfeed.user_service.presentation.dto.request.UpdateProfileRequestDto;
 import com.bandfeed.user_service.presentation.dto.response.LoginResponseDto;
 import com.bandfeed.user_service.presentation.dto.response.UserResponseDto;
+import common.dto.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/users")
@@ -31,61 +28,62 @@ public class UserController implements UserControllerDocs {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public ResponseEntity<?> signup(SignupRequestDto request) {
+    public ResponseEntity<CommonResponse<UserResponseDto>> signup(SignupRequestDto request) {
         User user = userService.signup(new CreateUserCommand(request.email(), request.password(), request.nickname(), null));
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserResponseDto.from(user));
+        return CommonResponse.created("회원가입이 완료되었습니다.", UserResponseDto.from(user));
     }
 
     @Override
-    public ResponseEntity<?> login(LoginRequestDto request) {
+    public ResponseEntity<CommonResponse<LoginResponseDto>> login(LoginRequestDto request) {
         User user = userService.login(request.email(), request.password());
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-        return ResponseEntity.ok(new LoginResponseDto(accessToken, refreshToken));
+        return CommonResponse.ok(new LoginResponseDto(accessToken, refreshToken));
     }
 
     @Override
-    public ResponseEntity<?> findMe(UUID userId) {
-        return ResponseEntity.ok(UserResponseDto.from(userService.findById(userId)));
+    public ResponseEntity<CommonResponse<UserResponseDto>> findMe(UUID userId) {
+        return CommonResponse.ok(UserResponseDto.from(userService.findById(userId)));
     }
 
     @Override
-    public ResponseEntity<?> findUserById(UUID userId) {
-        return ResponseEntity.ok(UserResponseDto.from(userService.findById(userId)));
+    public ResponseEntity<CommonResponse<UserResponseDto>> findUserById(UUID userId) {
+        return CommonResponse.ok(UserResponseDto.from(userService.findById(userId)));
     }
 
     @Override
-    public ResponseEntity<?> searchUserByNickname(String nickname) {
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<UserResponseDto>>> searchUserByNickname(@RequestParam String nickname) {
         List<UserResponseDto> users = userService.searchByNickname(nickname).stream()
                 .map(UserResponseDto::from)
                 .toList();
-        return ResponseEntity.ok(users);
+        return CommonResponse.ok(users);
     }
 
     @Override
     @GetMapping("/batch")
-    public ResponseEntity<?> findUsersByIds(@RequestParam List<UUID> ids) {
+    public ResponseEntity<CommonResponse<List<UserResponseDto>>> findUsersByIds(@RequestParam List<UUID> ids) {
         List<UserResponseDto> users = userService.findAllByIds(ids).stream()
                 .map(UserResponseDto::from)
                 .toList();
-        return ResponseEntity.ok(users);
+        return CommonResponse.ok(users);
     }
 
     @Override
-    public ResponseEntity<?> updateProfile(UUID userId, UpdateProfileRequestDto request) {
+    public ResponseEntity<CommonResponse<UserResponseDto>> updateProfile(UUID userId, UpdateProfileRequestDto request) {
         User user = userService.updateProfile(userId, request.nickname(), request.profileImageUrl(), request.introduction());
-        return ResponseEntity.ok(UserResponseDto.from(user));
+        return CommonResponse.ok(UserResponseDto.from(user));
     }
 
     @Override
-    public ResponseEntity<?> changePassword(UUID userId, ChangePasswordRequestDto request) {
+    public ResponseEntity<CommonResponse<?>> changePassword(UUID userId, ChangePasswordRequestDto request) {
         userService.changePassword(userId, request.currentPassword(), request.newPassword());
-        return ResponseEntity.ok().build();
+        return CommonResponse.ok("비밀번호가 변경되었습니다.");
     }
 
     @Override
-    public ResponseEntity<?> withdraw(UUID userId) {
+    public ResponseEntity<CommonResponse<?>> withdraw(UUID userId) {
         userService.withdraw(userId);
-        return ResponseEntity.noContent().build();
+        return CommonResponse.ok("회원 탈퇴가 완료되었습니다.");
     }
 }

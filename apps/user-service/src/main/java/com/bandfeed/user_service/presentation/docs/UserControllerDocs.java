@@ -4,6 +4,9 @@ import com.bandfeed.user_service.presentation.dto.request.ChangePasswordRequestD
 import com.bandfeed.user_service.presentation.dto.request.LoginRequestDto;
 import com.bandfeed.user_service.presentation.dto.request.SignupRequestDto;
 import com.bandfeed.user_service.presentation.dto.request.UpdateProfileRequestDto;
+import com.bandfeed.user_service.presentation.dto.response.LoginResponseDto;
+import com.bandfeed.user_service.presentation.dto.response.UserResponseDto;
+import common.dto.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,33 +16,33 @@ import java.util.UUID;
 public interface UserControllerDocs {
 
     @PostMapping("/signup")
-    ResponseEntity<?> signup(@RequestBody SignupRequestDto request);
+    ResponseEntity<CommonResponse<UserResponseDto>> signup(@RequestBody SignupRequestDto request);
 
     @PostMapping("/login")
-    ResponseEntity<?> login(@RequestBody LoginRequestDto request);
+    ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto request);
 
     @GetMapping("/me")
-    ResponseEntity<?> findMe(@RequestHeader("X-User-Id") UUID userId);
+    ResponseEntity<CommonResponse<UserResponseDto>> findMe(@RequestHeader("X-User-Id") UUID userId);
 
     @GetMapping("/{userId}")
-    ResponseEntity<?> findUserById(@PathVariable UUID userId);
+    ResponseEntity<CommonResponse<UserResponseDto>> findUserById(@PathVariable UUID userId);
 
-    @GetMapping("/search")
-    ResponseEntity<?> searchUserByNickname(@RequestParam String nickname);
+    @GetMapping
+    ResponseEntity<CommonResponse<List<UserResponseDto>>> searchUserByNickname(@RequestParam String nickname);
 
     @GetMapping("/batch")
-    ResponseEntity<?> findUsersByIds(@RequestParam List<UUID> ids);
+    ResponseEntity<CommonResponse<List<UserResponseDto>>> findUsersByIds(@RequestParam List<UUID> ids);
 
     @PatchMapping("/me")
-    ResponseEntity<?> updateProfile(
+    ResponseEntity<CommonResponse<UserResponseDto>> updateProfile(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody UpdateProfileRequestDto request);
 
     @PatchMapping("/me/password")
-    ResponseEntity<?> changePassword(
+    ResponseEntity<CommonResponse<?>> changePassword(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody ChangePasswordRequestDto request);
 
     @DeleteMapping("/me")
-    ResponseEntity<?> withdraw(@RequestHeader("X-User-Id") UUID userId);
+    ResponseEntity<CommonResponse<?>> withdraw(@RequestHeader("X-User-Id") UUID userId);
 }
