@@ -28,6 +28,15 @@ public class PostEntity extends BaseEntity implements Persistable<UUID> {
     @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID authorId;
 
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID bandId;
+
+    @Column(length = 100)
+    private String bandName;
+
+    @Column(length = 500)
+    private String bandImageUrl;
+
     @Column(nullable = false, length = 200)
     private String title;
 
@@ -35,11 +44,15 @@ public class PostEntity extends BaseEntity implements Persistable<UUID> {
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private PostEntity(UUID id, UUID songId, UUID authorId, String title, String content, boolean isNew) {
+    private PostEntity(UUID id, UUID songId, UUID authorId, UUID bandId, String bandName, String bandImageUrl,
+                       String title, String content, boolean isNew) {
         this.id = id;
         this.isNew = isNew;
         this.songId = songId;
         this.authorId = authorId;
+        this.bandId = bandId;
+        this.bandName = bandName;
+        this.bandImageUrl = bandImageUrl;
         this.title = title;
         this.content = content;
     }
@@ -50,6 +63,9 @@ public class PostEntity extends BaseEntity implements Persistable<UUID> {
                 .isNew(!domain.isPersisted())
                 .songId(domain.getSongId())
                 .authorId(domain.getAuthorId())
+                .bandId(domain.getBandId())
+                .bandName(domain.getBandName())
+                .bandImageUrl(domain.getBandImageUrl())
                 .title(domain.getTitle())
                 .content(domain.getContent())
                 .build();
@@ -66,7 +82,8 @@ public class PostEntity extends BaseEntity implements Persistable<UUID> {
     void markNotNew() { this.isNew = false; }
 
     public Post toDomain() {
-        return Post.reconstitute(id, songId, authorId, title, content, getCreatedAt(), getUpdatedAt());
+        return Post.reconstitute(id, songId, authorId, bandId, bandName, bandImageUrl, title, content,
+                getCreatedAt(), getUpdatedAt());
     }
 
     public void update(Post domain) {

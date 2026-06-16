@@ -29,7 +29,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(CreatePostCommand command) {
-        Post post = Post.create(command.songId(), command.authorId(), command.title(), command.content());
+        Post post = Post.create(command.songId(), command.authorId(), command.bandId(),
+                command.bandName(), command.bandImageUrl(), command.title(), command.content());
         return postRepository.save(post);
     }
 
