@@ -63,6 +63,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<User> findAllByIds(List<UUID> ids) {
+        return userRepository.findAllByIds(ids);
+    }
+
+    @Override
     public User updateProfile(UUID userId, String nickname, String profileImageUrl, String introduction) {
         User user = findById(userId);
         user.updateProfile(nickname, profileImageUrl, introduction);

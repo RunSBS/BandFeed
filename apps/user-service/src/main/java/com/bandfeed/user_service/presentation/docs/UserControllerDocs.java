@@ -7,6 +7,7 @@ import com.bandfeed.user_service.presentation.dto.request.UpdateProfileRequestDt
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserControllerDocs {
@@ -25,6 +26,9 @@ public interface UserControllerDocs {
 
     @GetMapping("/search")
     ResponseEntity<?> searchUserByNickname(@RequestParam String nickname);
+
+    @GetMapping("/batch")
+    ResponseEntity<?> findUsersByIds(@RequestParam List<UUID> ids);
 
     @PatchMapping("/me")
     ResponseEntity<?> updateProfile(

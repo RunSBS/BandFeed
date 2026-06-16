@@ -10,6 +10,7 @@ public interface UserRepository {
     Optional<User> findById(UUID id);
     Optional<User> findByEmail(String email);
     List<User> findByNicknameContaining(String nickname);
+    List<User> findAllByIds(List<UUID> ids);
     User save(User user);
     void delete(User user);
     boolean existsByEmail(String email);

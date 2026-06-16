@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/users")
@@ -55,6 +57,15 @@ public class UserController implements UserControllerDocs {
     @Override
     public ResponseEntity<?> searchUserByNickname(String nickname) {
         List<UserResponseDto> users = userService.searchByNickname(nickname).stream()
+                .map(UserResponseDto::from)
+                .toList();
+        return ResponseEntity.ok(users);
+    }
+
+    @Override
+    @GetMapping("/batch")
+    public ResponseEntity<?> findUsersByIds(@RequestParam List<UUID> ids) {
+        List<UserResponseDto> users = userService.findAllByIds(ids).stream()
                 .map(UserResponseDto::from)
                 .toList();
         return ResponseEntity.ok(users);

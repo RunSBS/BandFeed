@@ -48,4 +48,11 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(UserEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<User> findAllByIds(List<UUID> ids) {
+        return jpa.findByIdIn(ids).stream()
+                .map(UserEntity::toDomain)
+                .toList();
+    }
 }

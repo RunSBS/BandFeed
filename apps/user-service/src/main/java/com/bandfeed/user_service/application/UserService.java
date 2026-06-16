@@ -12,6 +12,7 @@ public interface UserService {
     User login(String email, String rawPassword);
     User findById(UUID userId);
     List<User> searchByNickname(String nickname);
+    List<User> findAllByIds(List<UUID> ids);
     User updateProfile(UUID userId, String nickname, String profileImageUrl, String introduction);
     void changePassword(UUID userId, String oldPassword, String newPassword);
     void withdraw(UUID userId);
