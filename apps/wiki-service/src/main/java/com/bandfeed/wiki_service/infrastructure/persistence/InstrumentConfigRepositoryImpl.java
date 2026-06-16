@@ -22,8 +22,8 @@ public class InstrumentConfigRepositoryImpl implements InstrumentConfigRepositor
     }
 
     @Override
-    public List<InstrumentConfig> findAllBySongId(UUID songId) {
-        return jpa.findAllBySongId(songId).stream().map(InstrumentConfigEntity::toDomain).toList();
+    public List<InstrumentConfig> findAllByPostId(UUID postId) {
+        return jpa.findAllByPostId(postId).stream().map(InstrumentConfigEntity::toDomain).toList();
     }
 
     @Override

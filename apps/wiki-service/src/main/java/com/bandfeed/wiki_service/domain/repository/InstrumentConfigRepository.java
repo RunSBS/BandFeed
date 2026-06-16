@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface InstrumentConfigRepository {
     Optional<InstrumentConfig> findById(UUID id);
-    List<InstrumentConfig> findAllBySongId(UUID songId);
+    List<InstrumentConfig> findAllByPostId(UUID postId);
     InstrumentConfig save(InstrumentConfig config);
     void delete(InstrumentConfig config);
 }

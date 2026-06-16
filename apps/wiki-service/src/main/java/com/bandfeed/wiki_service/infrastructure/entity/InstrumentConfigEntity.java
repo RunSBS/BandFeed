@@ -4,7 +4,6 @@ import com.bandfeed.wiki_service.domain.model.InstrumentConfig;
 import common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
@@ -23,42 +22,30 @@ public class InstrumentConfigEntity extends BaseEntity implements Persistable<UU
     private UUID id;
 
     @Column(nullable = false, columnDefinition = "BINARY(16)")
-    private UUID songId;
+    private UUID postId;
 
     @Column(nullable = false)
     private String instrumentType;
 
-    @Column(nullable = false)
-    private String difficulty;
-
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-
     @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID registeredBy;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private InstrumentConfigEntity(UUID id, UUID songId, String instrumentType,
-                                   String difficulty, String notes, UUID registeredBy, boolean isNew) {
+    private InstrumentConfigEntity(UUID id, UUID postId, String instrumentType, UUID registeredBy, boolean isNew) {
         this.id = id;
-        this.isNew = isNew;
-        this.songId = songId;
+        this.postId = postId;
         this.instrumentType = instrumentType;
-        this.difficulty = difficulty;
-        this.notes = notes;
         this.registeredBy = registeredBy;
+        this.isNew = isNew;
     }
 
     public static InstrumentConfigEntity from(InstrumentConfig domain) {
-        return InstrumentConfigEntity.builder()
-                .id(domain.getId())
-                .isNew(!domain.isPersisted())
-                .songId(domain.getSongId())
-                .instrumentType(domain.getInstrumentType())
-                .difficulty(domain.getDifficulty())
-                .notes(domain.getNotes())
-                .registeredBy(domain.getRegisteredBy())
-                .build();
+        return new InstrumentConfigEntity(
+                domain.getId(),
+                domain.getPostId(),
+                domain.getInstrumentType(),
+                domain.getRegisteredBy(),
+                !domain.isPersisted()
+        );
     }
 
     @Override
@@ -72,12 +59,6 @@ public class InstrumentConfigEntity extends BaseEntity implements Persistable<UU
     void markNotNew() { this.isNew = false; }
 
     public InstrumentConfig toDomain() {
-        return InstrumentConfig.reconstitute(id, songId, instrumentType, difficulty, notes, registeredBy);
-    }
-
-    public void update(InstrumentConfig domain) {
-        this.instrumentType = domain.getInstrumentType();
-        this.difficulty = domain.getDifficulty();
-        this.notes = domain.getNotes();
+        return InstrumentConfig.reconstitute(id, postId, instrumentType, registeredBy);
     }
 }

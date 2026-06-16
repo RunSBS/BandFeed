@@ -1,7 +1,5 @@
 package com.bandfeed.wiki_service.domain.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -11,51 +9,23 @@ public class InstrumentConfig {
 
     private final UUID id;
     private final boolean persisted;
-    private final UUID songId;
-    private String instrumentType;
-    private String difficulty;
-    private String notes;
+    private final UUID postId;
+    private final String instrumentType;
     private final UUID registeredBy;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private InstrumentConfig(UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
-        this.id = UUID.randomUUID();
-        this.persisted = false;
-        this.songId = songId;
-        this.instrumentType = instrumentType;
-        this.difficulty = difficulty;
-        this.notes = notes;
-        this.registeredBy = registeredBy;
-    }
-
-    private InstrumentConfig(UUID id, UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
+    private InstrumentConfig(UUID id, boolean persisted, UUID postId, String instrumentType, UUID registeredBy) {
         this.id = id;
-        this.persisted = true;
-        this.songId = songId;
+        this.persisted = persisted;
+        this.postId = postId;
         this.instrumentType = instrumentType;
-        this.difficulty = difficulty;
-        this.notes = notes;
         this.registeredBy = registeredBy;
     }
 
-    public static InstrumentConfig create(UUID songId, String instrumentType, String difficulty, String notes, UUID registeredBy) {
-        return InstrumentConfig.builder()
-                .songId(songId)
-                .instrumentType(instrumentType)
-                .difficulty(difficulty)
-                .notes(notes)
-                .registeredBy(registeredBy)
-                .build();
+    public static InstrumentConfig create(UUID postId, String instrumentType, UUID registeredBy) {
+        return new InstrumentConfig(UUID.randomUUID(), false, postId, instrumentType, registeredBy);
     }
 
-    public static InstrumentConfig reconstitute(UUID id, UUID songId, String instrumentType,
-                                                String difficulty, String notes, UUID registeredBy) {
-        return new InstrumentConfig(id, songId, instrumentType, difficulty, notes, registeredBy);
-    }
-
-    public void update(String instrumentType, String difficulty, String notes) {
-        this.instrumentType = instrumentType;
-        this.difficulty = difficulty;
-        this.notes = notes;
+    public static InstrumentConfig reconstitute(UUID id, UUID postId, String instrumentType, UUID registeredBy) {
+        return new InstrumentConfig(id, true, postId, instrumentType, registeredBy);
     }
 }

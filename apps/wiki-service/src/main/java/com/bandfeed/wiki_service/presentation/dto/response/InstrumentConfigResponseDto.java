@@ -6,18 +6,14 @@ import java.util.UUID;
 
 public record InstrumentConfigResponseDto(
         UUID id,
-        UUID songId,
-        String instrumentType,
-        String difficulty,
-        String notes
+        UUID postId,
+        String instrumentType
 ) {
     public static InstrumentConfigResponseDto from(InstrumentConfig config) {
         return new InstrumentConfigResponseDto(
                 config.getId(),
-                config.getSongId(),
-                config.getInstrumentType(),
-                config.getDifficulty(),
-                config.getNotes()
+                config.getPostId(),
+                config.getInstrumentType()
         );
     }
 }

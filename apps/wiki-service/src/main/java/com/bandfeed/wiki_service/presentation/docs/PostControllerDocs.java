@@ -1,5 +1,6 @@
 package com.bandfeed.wiki_service.presentation.docs;
 
+import com.bandfeed.wiki_service.presentation.dto.request.AddInstrumentConfigRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.request.CreatePostRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.request.UpdatePostRequestDto;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 public interface PostControllerDocs {
-
-    // ── WikiPost CRUD ─────────────────────────────────────────────────────────
 
     @PostMapping
     ResponseEntity<?> createPost(
@@ -35,5 +34,20 @@ public interface PostControllerDocs {
     @DeleteMapping("/{postId}")
     ResponseEntity<?> deletePost(
             @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId);
+
+    @PostMapping("/{postId}/instruments")
+    ResponseEntity<?> addInstrumentConfig(
+            @PathVariable UUID postId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody AddInstrumentConfigRequestDto request);
+
+    @GetMapping("/{postId}/instruments")
+    ResponseEntity<?> findInstrumentConfigs(@PathVariable UUID postId);
+
+    @DeleteMapping("/{postId}/instruments/{configId}")
+    ResponseEntity<?> deleteInstrumentConfig(
+            @PathVariable UUID postId,
+            @PathVariable UUID configId,
             @RequestHeader("X-User-Id") UUID userId);
 }

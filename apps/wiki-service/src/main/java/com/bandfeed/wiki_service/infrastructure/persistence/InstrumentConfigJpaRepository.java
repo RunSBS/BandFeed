@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface InstrumentConfigJpaRepository extends JpaRepository<InstrumentConfigEntity, UUID> {
-    List<InstrumentConfigEntity> findAllBySongId(UUID songId);
+    List<InstrumentConfigEntity> findAllByPostId(UUID postId);
 }
