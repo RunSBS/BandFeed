@@ -24,13 +24,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Override
-    public ChatRoom findOrCreateRoom(UUID userAId, UUID userBId) {
+    public ChatRoomCreationResult findOrCreateRoom(UUID userAId, UUID userBId) {
         return chatRoomRepository.findByParticipants(userAId, userBId)
+                .map(room -> new ChatRoomCreationResult(room, false))
                 .orElseGet(() -> {
                     ChatRoom room = chatRoomRepository.save(ChatRoom.create(userAId, userBId));
                     chatRoomMemberRepository.save(ChatRoomMember.create(room.getId(), userAId));
                     chatRoomMemberRepository.save(ChatRoomMember.create(room.getId(), userBId));
-                    return room;
+                    return new ChatRoomCreationResult(room, true);
                 });
     }
 

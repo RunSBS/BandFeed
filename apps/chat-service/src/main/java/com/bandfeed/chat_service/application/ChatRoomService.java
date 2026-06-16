@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface ChatRoomService {
 
-    ChatRoom findOrCreateRoom(UUID userAId, UUID userBId);
+    ChatRoomCreationResult findOrCreateRoom(UUID userAId, UUID userBId);
     ChatRoom findRoom(UUID roomId);
     List<ChatRoom> findMyRooms(UUID userId);
     void validateParticipant(ChatRoom room, UUID userId);

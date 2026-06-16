@@ -1,30 +1,28 @@
 package com.bandfeed.chat_service.presentation.docs;
 
 import com.bandfeed.chat_service.presentation.dto.request.CreateChatMessageRequestDto;
-import com.bandfeed.chat_service.presentation.dto.request.ReadMessageRequestDto;
+import com.bandfeed.chat_service.presentation.dto.response.ChatMessageResponseDto;
+import com.bandfeed.chat_service.presentation.dto.response.UnreadCountResponseDto;
+import common.dto.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ChatMessageControllerDocs {
 
     @GetMapping
-    ResponseEntity<?> findMessages(
+    ResponseEntity<CommonResponse<List<ChatMessageResponseDto>>> findMessages(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestParam UUID chatRoomId,
             @RequestParam(defaultValue = "50") int size);
 
     @PostMapping
-    ResponseEntity<?> sendMessage(
+    ResponseEntity<CommonResponse<ChatMessageResponseDto>> sendMessage(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody CreateChatMessageRequestDto request);
 
-    @PatchMapping("/read")
-    ResponseEntity<?> readMessage(
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestBody ReadMessageRequestDto request);
-
     @GetMapping("/unread-count")
-    ResponseEntity<?> countUnread(@RequestHeader("X-User-Id") UUID userId);
+    ResponseEntity<CommonResponse<UnreadCountResponseDto>> countUnread(@RequestHeader("X-User-Id") UUID userId);
 }
