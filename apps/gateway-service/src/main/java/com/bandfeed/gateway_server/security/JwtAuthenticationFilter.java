@@ -36,6 +36,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
+        // CORS preflight는 인증 없이 통과
+        if (request.getMethod() == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
+
         if (WHITELIST.contains(path)) {
             return chain.filter(exchange);
         }
