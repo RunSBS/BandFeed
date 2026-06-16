@@ -1,6 +1,7 @@
 package com.bandfeed.band_service.infrastructure.entity;
 
 import com.bandfeed.band_service.domain.model.BandMember;
+import com.bandfeed.band_service.domain.model.BandMemberStatus;
 import com.bandfeed.band_service.domain.model.BandRole;
 import common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -33,13 +34,18 @@ public class BandMemberEntity extends BaseEntity implements Persistable<UUID> {
     @Column(nullable = false)
     private BandRole role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BandMemberStatus status;
+
     @Builder(access = AccessLevel.PRIVATE)
-    private BandMemberEntity(UUID id, UUID bandId, UUID userId, BandRole role, boolean isNew) {
+    private BandMemberEntity(UUID id, UUID bandId, UUID userId, BandRole role, BandMemberStatus status, boolean isNew) {
         this.id = id;
         this.isNew = isNew;
         this.bandId = bandId;
         this.userId = userId;
         this.role = role;
+        this.status = status;
     }
 
     public static BandMemberEntity from(BandMember domain) {
@@ -49,6 +55,7 @@ public class BandMemberEntity extends BaseEntity implements Persistable<UUID> {
                 .bandId(domain.getBandId())
                 .userId(domain.getUserId())
                 .role(domain.getRole())
+                .status(domain.getStatus())
                 .build();
     }
 
@@ -63,10 +70,11 @@ public class BandMemberEntity extends BaseEntity implements Persistable<UUID> {
     void markNotNew() { this.isNew = false; }
 
     public BandMember toDomain() {
-        return BandMember.reconstitute(id, bandId, userId, role, getCreatedAt());
+        return BandMember.reconstitute(id, bandId, userId, role, status, getCreatedAt());
     }
 
     public void update(BandMember domain) {
         this.role = domain.getRole();
+        this.status = domain.getStatus();
     }
 }

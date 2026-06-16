@@ -91,6 +91,31 @@ public class BandController implements BandControllerDocs {
     }
 
     @Override
+    @GetMapping("/invitations/me")
+    public ResponseEntity<?> findMyPendingInvitations(@RequestHeader("X-User-Id") UUID userId) {
+        List<BandMember> invitations = bandService.findMyPendingInvitations(userId);
+        return ResponseEntity.ok(invitations.stream().map(BandMemberResponseDto::from).toList());
+    }
+
+    @Override
+    @PostMapping("/{bandId}/members/accept")
+    public ResponseEntity<?> acceptInvitation(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId) {
+        BandMember member = bandService.acceptInvitation(bandId, userId);
+        return ResponseEntity.ok(BandMemberResponseDto.from(member));
+    }
+
+    @Override
+    @DeleteMapping("/{bandId}/members/decline")
+    public ResponseEntity<?> declineInvitation(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId) {
+        bandService.declineInvitation(bandId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     @DeleteMapping("/{bandId}/members/{targetUserId}")
     public ResponseEntity<?> removeBandMember(
             @PathVariable UUID bandId,

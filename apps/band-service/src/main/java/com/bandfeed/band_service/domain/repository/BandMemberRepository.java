@@ -10,6 +10,8 @@ public interface BandMemberRepository {
     BandMember save(BandMember member);
     Optional<BandMember> findByBandIdAndUserId(UUID bandId, UUID userId);
     List<BandMember> findAllByBandId(UUID bandId);
+    List<BandMember> findAllActiveByBandId(UUID bandId);
+    List<BandMember> findAllPendingByUserId(UUID userId);
     List<BandMember> findAllByUserId(UUID userId);
     void delete(BandMember member);
 }

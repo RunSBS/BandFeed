@@ -19,8 +19,11 @@ public interface BandService {
     void deleteBand(UUID bandId, UUID requesterId);
 
     // ── BandMember CRUD ───────────────────────────────────────────────────────
-    BandMember inviteBandMember(UUID bandId, UUID userId, UUID requesterId);
+    BandMember inviteBandMember(UUID bandId, UUID inviteeId, UUID requesterId);
     List<BandMember> findAllBandMember(UUID bandId);
+    List<BandMember> findMyPendingInvitations(UUID userId);
+    BandMember acceptInvitation(UUID bandId, UUID userId);
+    void declineInvitation(UUID bandId, UUID userId);
     void removeBandMember(UUID bandId, UUID userId, UUID requesterId);
 
     // ── 상태 변경 ──────────────────────────────────────────────────────────────

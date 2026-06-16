@@ -48,6 +48,19 @@ public interface BandControllerDocs {
     @GetMapping("/{bandId}/members")
     ResponseEntity<?> findAllBandMember(@PathVariable UUID bandId);
 
+    @GetMapping("/invitations/me")
+    ResponseEntity<?> findMyPendingInvitations(@RequestHeader("X-User-Id") UUID userId);
+
+    @PostMapping("/{bandId}/members/accept")
+    ResponseEntity<?> acceptInvitation(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId);
+
+    @DeleteMapping("/{bandId}/members/decline")
+    ResponseEntity<?> declineInvitation(
+            @PathVariable UUID bandId,
+            @RequestHeader("X-User-Id") UUID userId);
+
     @DeleteMapping("/{bandId}/members/{targetUserId}")
     ResponseEntity<?> removeBandMember(
             @PathVariable UUID bandId,

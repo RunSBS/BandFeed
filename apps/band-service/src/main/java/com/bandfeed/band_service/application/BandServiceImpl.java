@@ -3,6 +3,7 @@ package com.bandfeed.band_service.application;
 import com.bandfeed.band_service.application.dto.command.CreateBandCommand;
 import com.bandfeed.band_service.domain.exception.AlreadyBandMemberException;
 import com.bandfeed.band_service.domain.exception.BandNotFoundException;
+import com.bandfeed.band_service.domain.exception.InvitationNotFoundException;
 import com.bandfeed.band_service.domain.exception.NotBandLeaderException;
 import com.bandfeed.band_service.domain.exception.NotBandMemberException;
 import com.bandfeed.band_service.domain.model.Band;
@@ -72,22 +73,44 @@ public class BandServiceImpl implements BandService {
     // ── BandMember CRUD ───────────────────────────────────────────────────────
 
     @Override
-    public BandMember inviteBandMember(UUID bandId, UUID userId, UUID requesterId) {
+    public BandMember inviteBandMember(UUID bandId, UUID inviteeId, UUID requesterId) {
         Band band = findBandById(bandId);
         validateLeader(band, requesterId);
 
-        bandMemberRepository.findByBandIdAndUserId(bandId, userId).ifPresent(m -> {
-            throw new AlreadyBandMemberException(userId, bandId);
+        bandMemberRepository.findByBandIdAndUserId(bandId, inviteeId).ifPresent(m -> {
+            throw new AlreadyBandMemberException(inviteeId, bandId);
         });
 
-        BandMember member = BandMember.create(bandId, userId, BandRole.MEMBER);
-        return bandMemberRepository.save(member);
+        return bandMemberRepository.save(BandMember.invite(bandId, inviteeId));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BandMember> findAllBandMember(UUID bandId) {
-        return bandMemberRepository.findAllByBandId(bandId);
+        return bandMemberRepository.findAllActiveByBandId(bandId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BandMember> findMyPendingInvitations(UUID userId) {
+        return bandMemberRepository.findAllPendingByUserId(userId);
+    }
+
+    @Override
+    public BandMember acceptInvitation(UUID bandId, UUID userId) {
+        BandMember member = bandMemberRepository.findByBandIdAndUserId(bandId, userId)
+                .filter(BandMember::isPending)
+                .orElseThrow(() -> new InvitationNotFoundException(bandId, userId));
+        member.accept();
+        return bandMemberRepository.save(member);
+    }
+
+    @Override
+    public void declineInvitation(UUID bandId, UUID userId) {
+        BandMember member = bandMemberRepository.findByBandIdAndUserId(bandId, userId)
+                .filter(BandMember::isPending)
+                .orElseThrow(() -> new InvitationNotFoundException(bandId, userId));
+        bandMemberRepository.delete(member);
     }
 
     @Override

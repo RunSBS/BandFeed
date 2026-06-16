@@ -1,6 +1,7 @@
 package com.bandfeed.band_service.infrastructure.persistence;
 
 import com.bandfeed.band_service.domain.model.BandMember;
+import com.bandfeed.band_service.domain.model.BandMemberStatus;
 import com.bandfeed.band_service.domain.repository.BandMemberRepository;
 import com.bandfeed.band_service.infrastructure.entity.BandMemberEntity;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,18 @@ public class BandMemberRepositoryImpl implements BandMemberRepository {
     @Override
     public List<BandMember> findAllByBandId(UUID bandId) {
         return jpa.findAllByBandId(bandId).stream().map(BandMemberEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<BandMember> findAllActiveByBandId(UUID bandId) {
+        return jpa.findAllByBandIdAndStatus(bandId, BandMemberStatus.ACTIVE).stream()
+                .map(BandMemberEntity::toDomain).toList();
+    }
+
+    @Override
+    public List<BandMember> findAllPendingByUserId(UUID userId) {
+        return jpa.findAllByUserIdAndStatus(userId, BandMemberStatus.PENDING).stream()
+                .map(BandMemberEntity::toDomain).toList();
     }
 
     @Override
