@@ -74,4 +74,10 @@ public class SongServiceImpl implements SongService {
         return songRepository.findById(songId)
                 .orElseThrow(() -> new SongNotFoundException(songId));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Song> findPopularSongs(int limit) {
+        return songRepository.findPopularSongs(limit);
+    }
 }

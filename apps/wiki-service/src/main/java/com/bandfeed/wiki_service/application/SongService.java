@@ -11,4 +11,5 @@ public interface SongService {
 
     Song registerSong(String spotifyTrackId);
     Song findSong(UUID songId);
+    List<Song> findPopularSongs(int limit);
 }
