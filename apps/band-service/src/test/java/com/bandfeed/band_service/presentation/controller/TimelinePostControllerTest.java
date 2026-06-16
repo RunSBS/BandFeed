@@ -7,6 +7,7 @@ import com.bandfeed.band_service.presentation.dto.request.UpdateTimelinePostRequ
 import com.bandfeed.band_service.presentation.dto.response.BandResponseDto;
 import com.bandfeed.band_service.presentation.dto.response.CommentResponseDto;
 import com.bandfeed.band_service.presentation.dto.response.TimelinePostResponseDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,9 @@ class TimelinePostControllerTest {
 
         mockMvc.perform(get("/api/timeline-posts/{postId}", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("합주 후기"))
-                .andExpect(jsonPath("$.content").value("오늘 합주 좋았다"))
-                .andExpect(jsonPath("$.bandId").value(bandId.toString()));
+                .andExpect(jsonPath("$.data.title").value("합주 후기"))
+                .andExpect(jsonPath("$.data.content").value("오늘 합주 좋았다"))
+                .andExpect(jsonPath("$.data.bandId").value(bandId.toString()));
     }
 
     @Test
@@ -55,7 +56,7 @@ class TimelinePostControllerTest {
 
         mockMvc.perform(get("/api/timeline-posts").param("bandId", bandId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2));
+                .andExpect(jsonPath("$.data.content.length()").value(2));
     }
 
     @Test
@@ -69,11 +70,12 @@ class TimelinePostControllerTest {
         createPost(myBand.id(), userId, "내밴드 글", "내용");
         createPost(otherBand.id(), otherUserId, "남의밴드 글", "내용");
 
-        mockMvc.perform(get("/api/timeline-posts/feed")
+        mockMvc.perform(get("/api/timeline-posts")
+                        .param("filter", "feed")
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("내밴드 글"));
+                .andExpect(jsonPath("$.data.content.length()").value(1))
+                .andExpect(jsonPath("$.data.content[0].title").value("내밴드 글"));
     }
 
     @Test
@@ -91,8 +93,8 @@ class TimelinePostControllerTest {
 
         mockMvc.perform(get("/api/timeline-posts/{postId}/comments", post.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].content").value("댓글입니다"));
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].content").value("댓글입니다"));
     }
 
     @Test
@@ -137,7 +139,8 @@ class TimelinePostControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        CommentResponseDto comment = objectMapper.readValue(response, CommentResponseDto.class);
+        JsonNode root = objectMapper.readTree(response);
+        CommentResponseDto comment = objectMapper.treeToValue(root.get("data"), CommentResponseDto.class);
 
         mockMvc.perform(delete("/api/timeline-posts/{postId}/comments/{commentId}", post.id(), comment.id())
                         .header("X-User-Id", otherUserId.toString()))
@@ -157,8 +160,8 @@ class TimelinePostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("수정제목"))
-                .andExpect(jsonPath("$.content").value("수정내용"));
+                .andExpect(jsonPath("$.data.title").value("수정제목"))
+                .andExpect(jsonPath("$.data.content").value("수정내용"));
     }
 
     @Test
@@ -169,7 +172,7 @@ class TimelinePostControllerTest {
 
         mockMvc.perform(delete("/api/timeline-posts/{postId}", created.id())
                         .header("X-User-Id", authorId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -185,15 +188,16 @@ class TimelinePostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value("좋은 글이네요"))
-                .andExpect(jsonPath("$.postId").value(post.id().toString()))
+                .andExpect(jsonPath("$.data.content").value("좋은 글이네요"))
+                .andExpect(jsonPath("$.data.postId").value(post.id().toString()))
                 .andReturn().getResponse().getContentAsString();
 
-        CommentResponseDto comment = objectMapper.readValue(response, CommentResponseDto.class);
+        JsonNode root = objectMapper.readTree(response);
+        CommentResponseDto comment = objectMapper.treeToValue(root.get("data"), CommentResponseDto.class);
 
         mockMvc.perform(delete("/api/timeline-posts/{postId}/comments/{commentId}", post.id(), comment.id())
                         .header("X-User-Id", authorId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     private BandResponseDto createBand(UUID leaderId, String name) throws Exception {
@@ -204,7 +208,8 @@ class TimelinePostControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, BandResponseDto.class);
+        JsonNode root = objectMapper.readTree(response);
+        return objectMapper.treeToValue(root.get("data"), BandResponseDto.class);
     }
 
     private TimelinePostResponseDto createPost(UUID bandId, UUID authorId, String title, String content) throws Exception {
@@ -215,6 +220,7 @@ class TimelinePostControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, TimelinePostResponseDto.class);
+        JsonNode root = objectMapper.readTree(response);
+        return objectMapper.treeToValue(root.get("data"), TimelinePostResponseDto.class);
     }
 }

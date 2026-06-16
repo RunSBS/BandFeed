@@ -59,8 +59,7 @@ public interface BandControllerDocs {
     @PatchMapping("/{bandId}/members/me")
     ResponseEntity<CommonResponse<BandMemberResponseDto>> acceptInvitation(
             @PathVariable UUID bandId,
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestBody UpdateMemberStatusRequestDto request);
+            @RequestHeader("X-User-Id") UUID userId);
 
     @DeleteMapping("/{bandId}/members/me")
     ResponseEntity<CommonResponse<?>> declineInvitation(

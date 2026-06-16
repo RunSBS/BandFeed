@@ -5,6 +5,7 @@ import com.bandfeed.band_service.presentation.dto.request.InviteMemberRequestDto
 import com.bandfeed.band_service.presentation.dto.request.TransferLeaderRequestDto;
 import com.bandfeed.band_service.presentation.dto.request.UpdateBandRequestDto;
 import com.bandfeed.band_service.presentation.dto.response.BandResponseDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +42,10 @@ class BandControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value("우리밴드"))
-                .andExpect(jsonPath("$.description").value("합주 모임"))
-                .andExpect(jsonPath("$.leaderId").value(leaderId.toString()));
+                .andExpect(jsonPath("$.data.id").exists())
+                .andExpect(jsonPath("$.data.name").value("우리밴드"))
+                .andExpect(jsonPath("$.data.description").value("합주 모임"))
+                .andExpect(jsonPath("$.data.leaderId").value(leaderId.toString()));
     }
 
     @Test
@@ -54,8 +55,8 @@ class BandControllerTest {
 
         mockMvc.perform(get("/api/bands/{bandId}", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(created.id().toString()))
-                .andExpect(jsonPath("$.name").value("조회용밴드"));
+                .andExpect(jsonPath("$.data.id").value(created.id().toString()))
+                .andExpect(jsonPath("$.data.name").value("조회용밴드"));
     }
 
     @Test
@@ -71,7 +72,7 @@ class BandControllerTest {
 
         mockMvc.perform(get("/api/bands").param("page", "0").param("size", "20"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray());
+                .andExpect(jsonPath("$.data").isArray());
     }
 
     @Test
@@ -86,8 +87,8 @@ class BandControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("수정후"))
-                .andExpect(jsonPath("$.description").value("수정된 설명"));
+                .andExpect(jsonPath("$.data.name").value("수정후"))
+                .andExpect(jsonPath("$.data.description").value("수정된 설명"));
     }
 
     @Test
@@ -201,17 +202,29 @@ class BandControllerTest {
 
         InviteMemberRequestDto request = new InviteMemberRequestDto(inviteeId);
 
+        // 초대 후 PENDING 상태 — 아직 ACTIVE 멤버가 아님
         mockMvc.perform(post("/api/bands/{bandId}/members", created.id())
                         .header("X-User-Id", leaderId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userId").value(inviteeId.toString()))
-                .andExpect(jsonPath("$.role").value("MEMBER"));
+                .andExpect(jsonPath("$.data.userId").value(inviteeId.toString()))
+                .andExpect(jsonPath("$.data.role").value("MEMBER"));
 
+        // 수락 전: ACTIVE 멤버는 리더 1명만
         mockMvc.perform(get("/api/bands/{bandId}/members", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.data.length()").value(1));
+
+        // 초대 수락
+        mockMvc.perform(patch("/api/bands/{bandId}/members/me", created.id())
+                        .header("X-User-Id", inviteeId.toString()))
+                .andExpect(status().isOk());
+
+        // 수락 후: ACTIVE 멤버 2명
+        mockMvc.perform(get("/api/bands/{bandId}/members", created.id()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(2));
     }
 
     @Test
@@ -223,11 +236,11 @@ class BandControllerTest {
 
         mockMvc.perform(delete("/api/bands/{bandId}/members/{userId}", created.id(), inviteeId)
                         .header("X-User-Id", leaderId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/bands/{bandId}/members", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.data.length()").value(1));
     }
 
     @Test
@@ -244,7 +257,7 @@ class BandControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.leaderId").value(newLeaderId.toString()));
+                .andExpect(jsonPath("$.data.leaderId").value(newLeaderId.toString()));
     }
 
     @Test
@@ -254,7 +267,7 @@ class BandControllerTest {
 
         mockMvc.perform(delete("/api/bands/{bandId}", created.id())
                         .header("X-User-Id", leaderId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     private BandResponseDto createBand(UUID leaderId, String name, String description) throws Exception {
@@ -265,7 +278,8 @@ class BandControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, BandResponseDto.class);
+        JsonNode root = objectMapper.readTree(response);
+        return objectMapper.treeToValue(root.get("data"), BandResponseDto.class);
     }
 
     private void inviteMember(UUID bandId, UUID leaderId, UUID inviteeId) throws Exception {

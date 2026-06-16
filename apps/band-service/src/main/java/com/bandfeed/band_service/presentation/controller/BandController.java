@@ -111,8 +111,7 @@ public class BandController implements BandControllerDocs {
     @PatchMapping("/{bandId}/members/me")
     public ResponseEntity<CommonResponse<BandMemberResponseDto>> acceptInvitation(
             @PathVariable UUID bandId,
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestBody UpdateMemberStatusRequestDto request) {
+            @RequestHeader("X-User-Id") UUID userId) {
         BandMember member = bandService.acceptInvitation(bandId, userId);
         return CommonResponse.ok(BandMemberResponseDto.from(member));
     }
