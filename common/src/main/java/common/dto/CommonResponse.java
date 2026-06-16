@@ -48,6 +48,14 @@ public class CommonResponse<T> {
                 .body(new CommonResponse<>(201, "SUCCESS", message, data));
     }
 
+    // ── 커스텀 상태 코드 응답 (ex. 200/201 조건부) ──────────────────
+
+    public static <T> ResponseEntity<CommonResponse<T>> of(HttpStatus httpStatus, String message, T data) {
+        return ResponseEntity
+                .status(httpStatus)
+                .body(new CommonResponse<>(httpStatus.value(), "SUCCESS", message, data));
+    }
+
     // ── 비동기 처리 수락 응답 (HTTP 202 Accepted) ──────────────────
 
     public static <T> ResponseEntity<CommonResponse<T>> accepted(String message, T data) {
