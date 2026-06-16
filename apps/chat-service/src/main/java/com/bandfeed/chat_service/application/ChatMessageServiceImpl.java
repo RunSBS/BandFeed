@@ -47,4 +47,21 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         member.readMessage(messageId);
         chatRoomMemberRepository.save(member);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countTotalUnread(UUID userId) {
+        return chatRoomMemberRepository.findAllByUserId(userId).stream()
+                .mapToLong(member -> {
+                    if (member.getLastReadMessageId() == null) {
+                        return chatMessageRepository.countAllUnread(member.getChatRoomId(), userId);
+                    }
+                    // lastReadMessageId의 sentAt을 조회해서 그 이후 메시지 수 계산
+                    return chatMessageRepository.findById(member.getLastReadMessageId())
+                            .map(lastRead -> chatMessageRepository.countUnreadAfter(
+                                    member.getChatRoomId(), userId, lastRead.getSentAt()))
+                            .orElse(chatMessageRepository.countAllUnread(member.getChatRoomId(), userId));
+                })
+                .sum();
+    }
 }

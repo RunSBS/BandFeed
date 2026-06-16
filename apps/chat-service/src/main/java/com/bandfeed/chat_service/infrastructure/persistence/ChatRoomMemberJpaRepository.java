@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface ChatRoomMemberJpaRepository extends JpaRepository<ChatRoomMemberEntity, UUID> {
     Optional<ChatRoomMemberEntity> findByChatRoomIdAndUserId(UUID chatRoomId, UUID userId);
     List<ChatRoomMemberEntity> findAllByChatRoomId(UUID chatRoomId);
+    List<ChatRoomMemberEntity> findAllByUserId(UUID userId);
 }

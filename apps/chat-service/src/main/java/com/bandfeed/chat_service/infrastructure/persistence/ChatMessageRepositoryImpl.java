@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,16 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
     public List<ChatMessage> findByChatRoomIdOrderByCreatedAtDesc(UUID chatRoomId, int size) {
         return jpa.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, PageRequest.of(0, size))
                 .stream().map(ChatMessageEntity::toDomain).toList();
+    }
+
+    @Override
+    public long countUnreadAfter(UUID chatRoomId, UUID userId, LocalDateTime after) {
+        return jpa.countUnreadAfter(chatRoomId, userId, after);
+    }
+
+    @Override
+    public long countAllUnread(UUID chatRoomId, UUID userId) {
+        return jpa.countByChatRoomIdAndSenderIdNot(chatRoomId, userId);
     }
 
     @Override

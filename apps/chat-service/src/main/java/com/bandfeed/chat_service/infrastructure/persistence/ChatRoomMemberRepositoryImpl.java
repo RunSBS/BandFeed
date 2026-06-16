@@ -27,6 +27,11 @@ public class ChatRoomMemberRepositoryImpl implements ChatRoomMemberRepository {
     }
 
     @Override
+    public List<ChatRoomMember> findAllByUserId(UUID userId) {
+        return jpa.findAllByUserId(userId).stream().map(ChatRoomMemberEntity::toDomain).toList();
+    }
+
+    @Override
     public ChatRoomMember save(ChatRoomMember member) {
         return jpa.save(ChatRoomMemberEntity.from(member)).toDomain();
     }

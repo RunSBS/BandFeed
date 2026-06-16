@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -49,5 +50,12 @@ public class ChatMessageController implements ChatMessageControllerDocs {
             @RequestBody ReadMessageRequestDto request) {
         chatMessageService.readMessage(request.chatRoomId(), userId, request.lastReadMessageId());
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @GetMapping("/unread-count")
+    public ResponseEntity<?> countUnread(@RequestHeader("X-User-Id") UUID userId) {
+        long count = chatMessageService.countTotalUnread(userId);
+        return ResponseEntity.ok(Map.of("count", count));
     }
 }

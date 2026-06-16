@@ -24,4 +24,7 @@ public interface ChatMessageControllerDocs {
     ResponseEntity<?> readMessage(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestBody ReadMessageRequestDto request);
+
+    @GetMapping("/unread-count")
+    ResponseEntity<?> countUnread(@RequestHeader("X-User-Id") UUID userId);
 }
