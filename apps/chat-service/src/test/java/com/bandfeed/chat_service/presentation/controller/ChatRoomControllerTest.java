@@ -51,7 +51,7 @@ class ChatRoomControllerTest {
     void findMyChatRooms_성공() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        chatRoomService.findOrCreateRoom(userId, targetUserId);
+        chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         mockMvc.perform(get("/api/chat-rooms")
                         .header("X-User-Id", userId.toString()))
@@ -63,7 +63,7 @@ class ChatRoomControllerTest {
     void findChatRoomById_참여자가_아니면_403() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId);
+        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         mockMvc.perform(get("/api/chat-rooms/{roomId}", room.getId())
                         .header("X-User-Id", UUID.randomUUID().toString()))
@@ -74,7 +74,7 @@ class ChatRoomControllerTest {
     void findChatRoomMembers_성공() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId);
+        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         mockMvc.perform(get("/api/chat-rooms/{roomId}/members", room.getId())
                         .header("X-User-Id", userId.toString()))

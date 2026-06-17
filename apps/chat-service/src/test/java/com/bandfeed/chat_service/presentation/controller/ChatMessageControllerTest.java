@@ -39,7 +39,7 @@ class ChatMessageControllerTest {
     void sendMessage_및_조회_성공() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId);
+        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         CreateChatMessageRequestDto request = new CreateChatMessageRequestDto(room.getId(), "안녕하세요");
 
@@ -61,7 +61,7 @@ class ChatMessageControllerTest {
     void sendMessage_참여자가_아니면_403() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId);
+        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         CreateChatMessageRequestDto request = new CreateChatMessageRequestDto(room.getId(), "안녕하세요");
 
@@ -76,7 +76,7 @@ class ChatMessageControllerTest {
     void readMessage_성공() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID targetUserId = UUID.randomUUID();
-        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId);
+        ChatRoom room = chatRoomService.findOrCreateRoom(userId, targetUserId).room();
 
         CreateChatMessageRequestDto sendRequest = new CreateChatMessageRequestDto(room.getId(), "메시지");
         String response = mockMvc.perform(post("/api/chat-messages")
