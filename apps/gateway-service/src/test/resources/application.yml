@@ -1,0 +1,15 @@
+spring:
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      routes: []
+
+eureka:
+  client:
+    enabled: false
+
+jwt:
+  secret: test-secret-key-for-testing-purposes-must-be-at-least-256-bits-long

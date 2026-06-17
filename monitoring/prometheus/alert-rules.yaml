@@ -1,0 +1,20 @@
+groups:
+  - name: bandfeed-alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "서비스 다운: {{ $labels.job }}"
+          description: "{{ $labels.job }} 서비스가 1분 이상 응답하지 않습니다."
+
+      - alert: HighMemoryUsage
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "높은 메모리 사용률: {{ $labels.job }}"
+          description: "{{ $labels.job }} Heap 메모리 사용률이 85%를 초과했습니다."

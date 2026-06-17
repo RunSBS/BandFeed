@@ -1,0 +1,237 @@
+x-java-tz: &java-tz
+  TZ: Asia/Seoul
+  JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
+
+x-common-service: &common-service
+  depends_on:
+    eureka-server:
+      condition: service_healthy
+    config-server:
+      condition: service_healthy
+    mysql:
+      condition: service_healthy
+  restart: unless-stopped
+  networks:
+    - bandfeed-network
+
+services:
+
+  # ─────────────────────────────────────────
+  # Infrastructure
+  # ─────────────────────────────────────────
+
+  mysql:
+    image: mysql:8.0
+    container_name: bandfeed-mysql
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bandfeed-redis
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: bandfeed-kafka
+    expose:
+      - "9092"
+    environment:
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      CLUSTER_ID: O9r3FldJQ3CbTqv1-OQibg
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  # ─────────────────────────────────────────
+  # Spring Cloud
+  # ─────────────────────────────────────────
+
+  eureka-server:
+    image: ${REGISTRY}/eureka-server:${IMAGE_TAG:-latest}
+    container_name: bandfeed-eureka
+    expose:
+      - "8761"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 8761
+      EUREKA_INSTANCE_PREFERIPADDRESS: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  config-server:
+    image: ${REGISTRY}/config-server:${IMAGE_TAG:-latest}
+    container_name: bandfeed-config
+    expose:
+      - "8888"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 8888
+      CONFIG_GIT_URI: ${CONFIG_GIT_URI}
+      CONFIG_GIT_BRANCH: ${CONFIG_GIT_BRANCH}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  gateway-service:
+    image: ${REGISTRY}/gateway-service:${IMAGE_TAG:-latest}
+    container_name: bandfeed-gateway
+    ports:
+      - "8000:8000"          # 유일하게 외부 노출 (Nginx 또는 직접 접근)
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 8000
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+  # ─────────────────────────────────────────
+  # Application Services
+  # ─────────────────────────────────────────
+
+  user-service:
+    image: ${REGISTRY}/user-service:${IMAGE_TAG:-latest}
+    container_name: bandfeed-user
+    expose:
+      - "9000"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 9000
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_USER_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    <<: *common-service
+
+  band-service:
+    image: ${REGISTRY}/band-service:${IMAGE_TAG:-latest}
+    container_name: bandfeed-band
+    expose:
+      - "9020"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 9020
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_BAND_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    <<: *common-service
+
+  wiki-service:
+    image: ${REGISTRY}/wiki-service:${IMAGE_TAG:-latest}
+    container_name: bandfeed-wiki
+    expose:
+      - "9030"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 9030
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_WIKI_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+    <<: *common-service
+
+  chat-service:
+    image: ${REGISTRY}/chat-service:${IMAGE_TAG:-latest}
+    container_name: bandfeed-chat
+    expose:
+      - "9040"
+    environment:
+      <<: *java-tz
+      SERVER_PORT: 9040
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_CHAT_DB}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    <<: *common-service
+
+  frontend:
+    image: ${REGISTRY}/frontend:${IMAGE_TAG:-latest}
+    container_name: bandfeed-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+    restart: unless-stopped
+    networks:
+      - bandfeed-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  bandfeed-network:
+    driver: bridge
