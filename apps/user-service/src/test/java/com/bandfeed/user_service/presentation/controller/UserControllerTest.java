@@ -37,9 +37,9 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.email").value("user1@bandfeed.com"))
-                .andExpect(jsonPath("$.nickname").value("닉네임1"));
+                .andExpect(jsonPath("$.data.id").exists())
+                .andExpect(jsonPath("$.data.email").value("user1@bandfeed.com"))
+                .andExpect(jsonPath("$.data.nickname").value("닉네임1"));
     }
 
     @Test
@@ -65,8 +65,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.refreshToken").exists());
+                .andExpect(jsonPath("$.data.accessToken").exists())
+                .andExpect(jsonPath("$.data.refreshToken").exists());
     }
 
     @Test
@@ -89,8 +89,8 @@ class UserControllerTest {
 
         mockMvc.perform(get("/api/users/{userId}", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(created.id().toString()))
-                .andExpect(jsonPath("$.nickname").value("조회유저"));
+                .andExpect(jsonPath("$.data.id").value(created.id().toString()))
+                .andExpect(jsonPath("$.data.nickname").value("조회유저"));
     }
 
     @Test
@@ -111,8 +111,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nickname").value("수정후닉네임"))
-                .andExpect(jsonPath("$.introduction").value("소개글"));
+                .andExpect(jsonPath("$.data.nickname").value("수정후닉네임"))
+                .andExpect(jsonPath("$.data.introduction").value("소개글"));
     }
 
     @Test
@@ -140,7 +140,7 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/api/users/me")
                         .header("X-User-Id", created.id().toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/users/{userId}", created.id()))
                 .andExpect(status().isNotFound());
@@ -152,6 +152,6 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, UserResponseDto.class);
+        return objectMapper.readValue(objectMapper.readTree(response).get("data").toString(), UserResponseDto.class);
     }
 }

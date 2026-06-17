@@ -41,8 +41,8 @@ class FollowControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.followerId").value(follower.id().toString()))
-                .andExpect(jsonPath("$.followeeId").value(followee.id().toString()));
+                .andExpect(jsonPath("$.data.followerId").value(follower.id().toString()))
+                .andExpect(jsonPath("$.data.followeeId").value(followee.id().toString()));
     }
 
     @Test
@@ -84,7 +84,7 @@ class FollowControllerTest {
 
         mockMvc.perform(delete("/api/follows/{followeeId}", followee.id())
                         .header("X-User-Id", follower.id().toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -107,13 +107,13 @@ class FollowControllerTest {
 
         mockMvc.perform(get("/api/follows/{userId}/followers", followee.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].followerId").value(follower.id().toString()));
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].followerId").value(follower.id().toString()));
 
         mockMvc.perform(get("/api/follows/{userId}/followings", follower.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].followeeId").value(followee.id().toString()));
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].followeeId").value(followee.id().toString()));
     }
 
     private UserResponseDto signup(String email, String nickname) throws Exception {
@@ -123,7 +123,7 @@ class FollowControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, UserResponseDto.class);
+        return objectMapper.readValue(objectMapper.readTree(response).get("data").toString(), UserResponseDto.class);
     }
 
     private void follow(UUID followerId, UUID followeeId) throws Exception {

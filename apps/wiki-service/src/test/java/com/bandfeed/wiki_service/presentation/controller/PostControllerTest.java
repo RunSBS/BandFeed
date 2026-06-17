@@ -42,9 +42,9 @@ class PostControllerTest {
 
         mockMvc.perform(get("/api/wiki-posts/{postId}", created.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("이 곡 합주 팁"))
-                .andExpect(jsonPath("$.content").value("이렇게 치면 편해요"))
-                .andExpect(jsonPath("$.songId").value(songId.toString()));
+                .andExpect(jsonPath("$.data.title").value("이 곡 합주 팁"))
+                .andExpect(jsonPath("$.data.content").value("이렇게 치면 편해요"))
+                .andExpect(jsonPath("$.data.songId").value(songId.toString()));
     }
 
     @Test
@@ -56,7 +56,7 @@ class PostControllerTest {
 
         mockMvc.perform(get("/api/wiki-posts").param("songId", songId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2));
+                .andExpect(jsonPath("$.data.content.length()").value(2));
     }
 
     @Test
@@ -70,8 +70,8 @@ class PostControllerTest {
                         .param("songId", songId.toString())
                         .param("sort", "latest"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("나중쓴글"))
-                .andExpect(jsonPath("$.content[1].title").value("먼저쓴글"));
+                .andExpect(jsonPath("$.data.content[0].title").value("나중쓴글"))
+                .andExpect(jsonPath("$.data.content[1].title").value("먼저쓴글"));
     }
 
     @Test
@@ -85,8 +85,8 @@ class PostControllerTest {
                         .param("songId", songId.toString())
                         .param("sort", "oldest"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("먼저쓴글"))
-                .andExpect(jsonPath("$.content[1].title").value("나중쓴글"));
+                .andExpect(jsonPath("$.data.content[0].title").value("먼저쓴글"))
+                .andExpect(jsonPath("$.data.content[1].title").value("나중쓴글"));
     }
 
     @Test
@@ -102,8 +102,8 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("수정제목"))
-                .andExpect(jsonPath("$.content").value("수정내용"));
+                .andExpect(jsonPath("$.data.title").value("수정제목"))
+                .andExpect(jsonPath("$.data.content").value("수정내용"));
     }
 
     @Test
@@ -142,7 +142,7 @@ class PostControllerTest {
 
         mockMvc.perform(delete("/api/wiki-posts/{postId}", created.id())
                         .header("X-User-Id", authorId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     private UUID createSongId() {
@@ -151,13 +151,13 @@ class PostControllerTest {
     }
 
     private PostResponseDto createPost(UUID songId, UUID authorId, String title, String content) throws Exception {
-        CreatePostRequestDto request = new CreatePostRequestDto(songId, title, content);
+        CreatePostRequestDto request = new CreatePostRequestDto(songId, null, null, null, title, content);
         String response = mockMvc.perform(post("/api/wiki-posts")
                         .header("X-User-Id", authorId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, PostResponseDto.class);
+        return objectMapper.readValue(objectMapper.readTree(response).get("data").toString(), PostResponseDto.class);
     }
 }

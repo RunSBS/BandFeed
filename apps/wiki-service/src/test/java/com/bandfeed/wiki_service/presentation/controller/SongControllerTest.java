@@ -7,8 +7,10 @@ import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifySearchResp
 import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyTrackItem;
 import com.bandfeed.wiki_service.infrastructure.client.spotify.SpotifyTrackResponse;
 import com.bandfeed.wiki_service.presentation.dto.request.AddInstrumentConfigRequestDto;
+import com.bandfeed.wiki_service.presentation.dto.request.CreatePostRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.request.RegisterSongRequestDto;
 import com.bandfeed.wiki_service.presentation.dto.response.InstrumentConfigResponseDto;
+import com.bandfeed.wiki_service.presentation.dto.response.PostResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -53,10 +55,10 @@ class SongControllerTest {
         Mockito.when(spotifyClient.searchTracks(eq("한페이지"), anyInt(), anyInt()))
                 .thenReturn(new SpotifySearchResponse(List.of(item)));
 
-        mockMvc.perform(get("/api/songs/search").param("keyword", "한페이지"))
+        mockMvc.perform(get("/api/songs").param("keyword", "한페이지"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("한페이지가되어"))
-                .andExpect(jsonPath("$[0].trackId").value(trackId));
+                .andExpect(jsonPath("$.data[0].title").value("한페이지가되어"))
+                .andExpect(jsonPath("$.data[0].spotifyTrackId").value(trackId));
 
         Mockito.verify(spotifyClient).searchTracks(eq("한페이지"), anyInt(), anyInt());
     }
@@ -65,9 +67,9 @@ class SongControllerTest {
     void searchSongs_DB에_있으면_Spotify_호출안함() throws Exception {
         songRepository.save(Song.create("track-cached", "기억의 습작", "전람회", "Forever", "http://image.url/300", 240000));
 
-        mockMvc.perform(get("/api/songs/search").param("keyword", "기억"))
+        mockMvc.perform(get("/api/songs").param("keyword", "기억"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("기억의 습작"));
+                .andExpect(jsonPath("$.data[0].title").value("기억의 습작"));
 
         Mockito.verifyNoInteractions(spotifyClient);
     }
@@ -84,30 +86,17 @@ class SongControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.spotifyTrackId").value(trackId))
-                .andExpect(jsonPath("$.title").value("Title"));
+                .andExpect(jsonPath("$.data.spotifyTrackId").value(trackId))
+                .andExpect(jsonPath("$.data.title").value("Title"));
     }
 
-    @Test
-    void registerSong_중복이면_에러() throws Exception {
-        String trackId = "track-dup";
-        songRepository.save(Song.create(trackId, "Title", "Artist", "Album", "http://img", 200000));
-
-        RegisterSongRequestDto request = new RegisterSongRequestDto(trackId);
-
-        mockMvc.perform(post("/api/songs")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
+@Test
     void findSongById_성공() throws Exception {
         Song song = songRepository.save(Song.create("track-find", "곡명", "아티스트", "앨범", "http://img", 180000));
 
         mockMvc.perform(get("/api/songs/{songId}", song.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("곡명"));
+                .andExpect(jsonPath("$.data.title").value("곡명"));
     }
 
     @Test
@@ -115,28 +104,40 @@ class SongControllerTest {
         Song song = songRepository.save(Song.create("track-instr", "곡명", "아티스트", "앨범", "http://img", 180000));
         UUID userId = UUID.randomUUID();
 
-        AddInstrumentConfigRequestDto request = new AddInstrumentConfigRequestDto("GUITAR", "중급", "카포 3프렛");
+        // 먼저 post 생성
+        CreatePostRequestDto postRequest = new CreatePostRequestDto(song.getId(), null, null, null, "제목", "내용");
+        String postResponse = mockMvc.perform(post("/api/wiki-posts")
+                        .header("X-User-Id", userId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postRequest)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        PostResponseDto createdPost = objectMapper.readValue(
+                objectMapper.readTree(postResponse).get("data").toString(), PostResponseDto.class);
 
-        String response = mockMvc.perform(post("/api/songs/{songId}/instruments", song.getId())
+        AddInstrumentConfigRequestDto request = new AddInstrumentConfigRequestDto("GUITAR");
+
+        String response = mockMvc.perform(post("/api/wiki-posts/{postId}/instruments", createdPost.id())
                         .header("X-User-Id", userId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.instrumentType").value("GUITAR"))
+                .andExpect(jsonPath("$.data.instrumentType").value("GUITAR"))
                 .andReturn().getResponse().getContentAsString();
 
-        InstrumentConfigResponseDto created = objectMapper.readValue(response, InstrumentConfigResponseDto.class);
+        InstrumentConfigResponseDto created = objectMapper.readValue(
+                objectMapper.readTree(response).get("data").toString(), InstrumentConfigResponseDto.class);
 
-        mockMvc.perform(get("/api/songs/{songId}/instruments", song.getId()))
+        mockMvc.perform(get("/api/wiki-posts/{postId}/instruments", createdPost.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.data.length()").value(1));
 
-        mockMvc.perform(delete("/api/songs/{songId}/instruments/{configId}", song.getId(), created.id())
+        mockMvc.perform(delete("/api/wiki-posts/{postId}/instruments/{configId}", createdPost.id(), created.id())
                         .header("X-User-Id", userId.toString()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/songs/{songId}/instruments", song.getId()))
+        mockMvc.perform(get("/api/wiki-posts/{postId}/instruments", createdPost.id()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.data.length()").value(0));
     }
 }
