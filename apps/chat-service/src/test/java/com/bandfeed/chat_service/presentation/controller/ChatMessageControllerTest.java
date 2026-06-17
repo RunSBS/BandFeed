@@ -48,13 +48,13 @@ class ChatMessageControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value("안녕하세요"));
+                .andExpect(jsonPath("$.data.content").value("안녕하세요"));
 
         mockMvc.perform(get("/api/chat-messages")
                         .header("X-User-Id", targetUserId.toString())
                         .param("chatRoomId", room.getId().toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.data.length()").value(1));
     }
 
     @Test
@@ -85,10 +85,10 @@ class ChatMessageControllerTest {
                         .content(objectMapper.writeValueAsString(sendRequest)))
                 .andReturn().getResponse().getContentAsString();
 
-        UUID messageId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
+        UUID messageId = UUID.fromString(objectMapper.readTree(response).get("data").get("id").asText());
 
         ReadMessageRequestDto readRequest = new ReadMessageRequestDto(room.getId(), messageId);
-        mockMvc.perform(patch("/api/chat-messages/read")
+        mockMvc.perform(patch("/api/chat-rooms/{roomId}/read-status", room.getId())
                         .header("X-User-Id", targetUserId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(readRequest)))

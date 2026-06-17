@@ -56,7 +56,7 @@ class ChatRoomControllerTest {
         mockMvc.perform(get("/api/chat-rooms")
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.data.length()").value(1));
     }
 
     @Test
@@ -79,6 +79,6 @@ class ChatRoomControllerTest {
         mockMvc.perform(get("/api/chat-rooms/{roomId}/members", room.getId())
                         .header("X-User-Id", userId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.data.length()").value(2));
     }
 }
